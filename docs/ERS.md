@@ -64,6 +64,23 @@ cantidad estimada, número de porciones y **nivel de confianza** de la identific
 > suficiente, la aplicación debe mostrarlo explícitamente como "no disponible" en vez de asumir un
 > valor (p. ej. no rellenar micronutrientes faltantes con cero). Es preferible mostrar un vacío que
 > un dato incorrecto.
+>
+> **Nota de implementación:** implementado de forma **real** (no simulada) con **Google Gemini
+> Vision** (`GeminiFoodRecognitionService`). El usuario ingresa su propia clave de API gratuita
+> (obtenida en aistudio.google.com/app/apikey) en Configuración; se guarda cifrada solo en el
+> dispositivo (`ApiKeyStore`) y nunca se incluye en el código fuente ni en el binario compilado. La
+> app llama directamente a la API de Gemini por HTTPS con esa clave, usando salida estructurada
+> (JSON Schema) para obtener nombre del alimento, ingredientes, método de cocción, peso estimado,
+> porciones, nivel de confianza y los valores nutricionales de RF-06 en una sola llamada. Los campos
+> que el modelo no pueda determinar se devuelven como `null`, respetando el principio de integridad
+> de datos.
+>
+> **Nota de seguridad:** para una app publicada en tiendas con múltiples usuarios, la recomendación
+> de Sección 3 (proxy backend sin estado) sigue siendo la correcta — evita exponer cualquier clave
+> compartida. Como cada usuario aquí aporta su propia clave personal (con su propia cuota gratuita),
+> el riesgo de extraerla del dispositivo se limita a esa cuenta individual, no a infraestructura
+> compartida; es un tradeoff aceptable para uso personal/local-first mientras no haya una cuenta de
+> nube propia del proyecto.
 
 ### RF-06 Información Nutricional
 
@@ -253,15 +270,17 @@ conversacionales avanzados).
 
 ## 9. Fases de Construcción
 
-**Fase 1 — MVP (actual):** RF-01 (solo correo/contraseña local), RF-02, RF-03, RF-06/07/08
-(registro manual con reconocimiento de fotos simulado), RF-09 (escaneo de factura en PDF, con
-extracción simulada), RF-11 (despensa manual o vía factura), RF-17 (panel principal). Corre en
-simulador iOS y emulador Android.
+**Fase 1 — MVP (actual):** RF-01 (solo correo/contraseña local), RF-02, RF-03, RF-04/05/06/07/08
+(reconocimiento de fotos **real** con Gemini Vision, requiere que el usuario configure su propia
+clave de API gratuita en Configuración), RF-09 (escaneo de factura en PDF con extracción **real**
+para el formato CSU/Automercado), RF-11 (despensa manual o vía factura), RF-17 (panel principal).
+Corre en simulador iOS y emulador Android.
 
-**Fases siguientes (documentadas, no implementadas aún):** RF-04/05 y RF-09 con IA/OCR real
-(requiere clave de API y proxy backend desplegado), RF-12 (planificador con IA), RF-13/14/15
-(recomendaciones y asistente conversacional), RF-16 (código de barras), RF-18/19/20 (reportes y
-exportación), RF-21 (notificaciones), inicio de sesión con Google/Microsoft.
+**Fases siguientes (documentadas, no implementadas aún):** RF-09 con otros formatos de factura u
+OCR de fotos, proxy backend opcional para ocultar la clave de Gemini en un despliegue multiusuario,
+RF-12 (planificador con IA), RF-13/14/15 (recomendaciones y asistente conversacional), RF-16
+(código de barras), RF-18/19/20 (reportes y exportación), RF-21 (notificaciones), inicio de sesión
+con Google/Microsoft.
 
 ---
 

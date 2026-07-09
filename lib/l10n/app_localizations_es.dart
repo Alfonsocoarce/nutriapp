@@ -431,6 +431,56 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsConfirm => 'Confirmar';
 
   @override
+  String get settingsApiKeyTitle => 'Clave de API de IA (Gemini)';
+
+  @override
+  String get settingsApiKeySubtitleSet =>
+      'Configurada — el reconocimiento de fotos está activo';
+
+  @override
+  String get settingsApiKeySubtitleUnset =>
+      'Sin configurar — el reconocimiento de fotos no funcionará';
+
+  @override
+  String get settingsApiKeyDialogTitle => 'Clave de API de Gemini';
+
+  @override
+  String get settingsApiKeyDialogDescription =>
+      'NutriApp usa Gemini Vision para identificar alimentos en tus fotos. Obtén una clave gratuita en aistudio.google.com/app/apikey y pégala aquí. Se guarda cifrada únicamente en este dispositivo.';
+
+  @override
+  String get settingsApiKeyFieldLabel => 'Clave de API';
+
+  @override
+  String get settingsApiKeySave => 'Guardar clave';
+
+  @override
+  String get settingsApiKeyRemove => 'Quitar clave';
+
+  @override
+  String get settingsApiKeySaved => 'Clave guardada correctamente';
+
+  @override
+  String get settingsApiKeyRemoved => 'Clave eliminada';
+
+  @override
+  String get foodLogMissingApiKeyTitle => 'Falta configurar la IA';
+
+  @override
+  String get foodLogMissingApiKeyMessage =>
+      'Para reconocer alimentos en fotos, primero agrega tu clave de API de Gemini en Configuración.';
+
+  @override
+  String get foodLogGoToSettings => 'Ir a Configuración';
+
+  @override
+  String get foodLogAnalysisFailedTitle => 'No se pudo analizar la foto';
+
+  @override
+  String get foodLogAnalysisFailedMessage =>
+      'Verifica tu conexión a Internet y tu clave de API, o intenta de nuevo.';
+
+  @override
   String get commonSave => 'Guardar';
 
   @override

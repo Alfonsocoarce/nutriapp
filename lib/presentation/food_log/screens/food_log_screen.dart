@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../data/services/gemini_food_recognition_service.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../shared/widgets/settings_screen.dart';
 import '../providers/food_log_providers.dart';
 import 'food_entry_form_screen.dart';
 
@@ -31,13 +33,51 @@ class _FoodLogScreenState extends ConsumerState<FoodLogScreen> {
         builder: (_) =>
             FoodEntryFormScreen(initialResult: result, photoPath: photo.path),
       ));
+    } on MissingApiKeyException {
+      if (mounted) await _showMissingApiKeyDialog(l10n);
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.commonError)));
+        await showDialog<void>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(l10n.foodLogAnalysisFailedTitle),
+            content: Text(l10n.foodLogAnalysisFailedMessage),
+            actions: [
+              FilledButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(l10n.commonRetry),
+              ),
+            ],
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _analyzing = false);
+    }
+  }
+
+  Future<void> _showMissingApiKeyDialog(AppLocalizations l10n) async {
+    final goToSettings = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.foodLogMissingApiKeyTitle),
+        content: Text(l10n.foodLogMissingApiKeyMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.settingsCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.foodLogGoToSettings),
+          ),
+        ],
+      ),
+    );
+    if (goToSettings == true && mounted) {
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const SettingsScreen()),
+      );
     }
   }
 

@@ -928,6 +928,96 @@ abstract class AppLocalizations {
   /// **'Confirmar'**
   String get settingsConfirm;
 
+  /// No description provided for @settingsApiKeyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Clave de API de IA (Gemini)'**
+  String get settingsApiKeyTitle;
+
+  /// No description provided for @settingsApiKeySubtitleSet.
+  ///
+  /// In es, this message translates to:
+  /// **'Configurada — el reconocimiento de fotos está activo'**
+  String get settingsApiKeySubtitleSet;
+
+  /// No description provided for @settingsApiKeySubtitleUnset.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin configurar — el reconocimiento de fotos no funcionará'**
+  String get settingsApiKeySubtitleUnset;
+
+  /// No description provided for @settingsApiKeyDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Clave de API de Gemini'**
+  String get settingsApiKeyDialogTitle;
+
+  /// No description provided for @settingsApiKeyDialogDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'NutriApp usa Gemini Vision para identificar alimentos en tus fotos. Obtén una clave gratuita en aistudio.google.com/app/apikey y pégala aquí. Se guarda cifrada únicamente en este dispositivo.'**
+  String get settingsApiKeyDialogDescription;
+
+  /// No description provided for @settingsApiKeyFieldLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Clave de API'**
+  String get settingsApiKeyFieldLabel;
+
+  /// No description provided for @settingsApiKeySave.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar clave'**
+  String get settingsApiKeySave;
+
+  /// No description provided for @settingsApiKeyRemove.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar clave'**
+  String get settingsApiKeyRemove;
+
+  /// No description provided for @settingsApiKeySaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Clave guardada correctamente'**
+  String get settingsApiKeySaved;
+
+  /// No description provided for @settingsApiKeyRemoved.
+  ///
+  /// In es, this message translates to:
+  /// **'Clave eliminada'**
+  String get settingsApiKeyRemoved;
+
+  /// No description provided for @foodLogMissingApiKeyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Falta configurar la IA'**
+  String get foodLogMissingApiKeyTitle;
+
+  /// No description provided for @foodLogMissingApiKeyMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Para reconocer alimentos en fotos, primero agrega tu clave de API de Gemini en Configuración.'**
+  String get foodLogMissingApiKeyMessage;
+
+  /// No description provided for @foodLogGoToSettings.
+  ///
+  /// In es, this message translates to:
+  /// **'Ir a Configuración'**
+  String get foodLogGoToSettings;
+
+  /// No description provided for @foodLogAnalysisFailedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo analizar la foto'**
+  String get foodLogAnalysisFailedTitle;
+
+  /// No description provided for @foodLogAnalysisFailedMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Verifica tu conexión a Internet y tu clave de API, o intenta de nuevo.'**
+  String get foodLogAnalysisFailedMessage;
+
   /// No description provided for @commonSave.
   ///
   /// In es, this message translates to:

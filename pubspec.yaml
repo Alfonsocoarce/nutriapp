@@ -64,6 +64,9 @@ dependencies:
   # Password hashing
   crypto: ^3.0.6
 
+  # HTTP calls to the Gemini Vision API for real food photo recognition
+  http: ^1.2.2
+
   # Localization
   intl: ^0.20.2
 

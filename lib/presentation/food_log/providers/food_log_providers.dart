@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../data/repositories/sqlite_food_log_repository.dart';
 import '../../../data/services/food_recognition_service.dart';
-import '../../../data/services/mock_food_recognition_service.dart';
+import '../../../data/services/gemini_food_recognition_service.dart';
 import '../../../domain/entities/food_entry.dart';
 import '../../../domain/repositories/food_log_repository.dart';
 import '../../auth/providers/auth_providers.dart';
@@ -11,9 +11,12 @@ final foodLogRepositoryProvider = Provider<FoodLogRepository>((ref) {
   return SqliteFoodLogRepository();
 });
 
-/// Single provider override point for swapping in a real vision API later.
+/// Real (non-mocked) food recognition via Gemini Vision. Requires the user
+/// to configure their own API key in Configuración — see [ApiKeyStore] and
+/// [GeminiFoodRecognitionService]. Single provider override point for
+/// swapping in a different vision backend later.
 final foodRecognitionServiceProvider = Provider<FoodRecognitionService>((ref) {
-  return MockFoodRecognitionService();
+  return GeminiFoodRecognitionService();
 });
 
 class TodaysFoodLogController extends StateNotifier<AsyncValue<List<FoodEntry>>> {
