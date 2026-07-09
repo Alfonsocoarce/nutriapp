@@ -1,12 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../data/repositories/sqlite_pantry_repository.dart';
+import '../../../data/services/csu_invoice_parsing_service.dart';
+import '../../../data/services/invoice_parsing_service.dart';
 import '../../../domain/entities/pantry_item.dart';
 import '../../../domain/repositories/pantry_repository.dart';
 import '../../auth/providers/auth_providers.dart';
 
 final pantryRepositoryProvider = Provider<PantryRepository>((ref) {
   return SqlitePantryRepository();
+});
+
+/// Real (non-mocked) PDF text parser for Costa Rican "Tiquete Electrónico"
+/// supermarket receipts — see [CsuInvoiceParsingService]. For other
+/// receipt formats, add a new [InvoiceParsingService] implementation (e.g.
+/// an OCR/vision-based one behind a backend proxy) and swap it in here.
+final invoiceParsingServiceProvider = Provider<InvoiceParsingService>((ref) {
+  return CsuInvoiceParsingService();
 });
 
 class PantryController extends StateNotifier<AsyncValue<List<PantryItem>>> {
@@ -29,6 +39,13 @@ class PantryController extends StateNotifier<AsyncValue<List<PantryItem>>> {
 
   Future<void> addItem(PantryItem item) async {
     await _repository.addItem(item);
+    await reload();
+  }
+
+  Future<void> addItems(List<PantryItem> items) async {
+    for (final item in items) {
+      await _repository.addItem(item);
+    }
     await reload();
   }
 

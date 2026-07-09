@@ -85,6 +85,17 @@ modificar la clasificación.
 Carga de facturas impresas, electrónicas o fotografiadas. La IA extrae producto, cantidad, unidad,
 fecha y precio (opcional).
 
+> **Nota de implementación (fase MVP):** implementado de forma **real** (no simulada) para facturas
+> electrónicas en **PDF** con capa de texto — específicamente el formato "Tiquete Electrónico" de
+> Corporación Supermercados Unidos (CSU/Automercado). `CsuInvoiceParsingService` extrae el texto
+> del PDF con `syncfusion_flutter_pdf` (Dart puro, sin código nativo ni servicios externos) y
+> reconoce cada línea de producto (código, cantidad, descripción, precio) por expresión regular,
+> asignando una categoría de despensa mediante un diccionario de palabras clave
+> (`InvoiceCategoryGuesser`). El usuario revisa y corrige cada producto antes de guardarlo —mismo
+> principio de "no adivinar" que RF-05. Otros formatos de factura (fotografía, otros supermercados)
+> requieren una nueva implementación de `InvoiceParsingService` (posiblemente con OCR/IA detrás de
+> un proxy) intercambiable en el mismo punto de extensión.
+
 ### RF-10 Registro Manual de Compras
 
 Producto, cantidad, unidad, fecha de compra, fecha de vencimiento — vía factura o ingreso manual.
@@ -243,11 +254,12 @@ conversacionales avanzados).
 ## 9. Fases de Construcción
 
 **Fase 1 — MVP (actual):** RF-01 (solo correo/contraseña local), RF-02, RF-03, RF-06/07/08
-(registro manual con reconocimiento de fotos simulado), RF-11 (despensa manual), RF-17 (panel
-principal). Corre en simulador iOS y emulador Android.
+(registro manual con reconocimiento de fotos simulado), RF-09 (escaneo de factura en PDF, con
+extracción simulada), RF-11 (despensa manual o vía factura), RF-17 (panel principal). Corre en
+simulador iOS y emulador Android.
 
-**Fases siguientes (documentadas, no implementadas aún):** RF-04/05 con IA real (requiere clave de
-API y proxy backend desplegado), RF-09 (OCR de facturas), RF-12 (planificador con IA), RF-13/14/15
+**Fases siguientes (documentadas, no implementadas aún):** RF-04/05 y RF-09 con IA/OCR real
+(requiere clave de API y proxy backend desplegado), RF-12 (planificador con IA), RF-13/14/15
 (recomendaciones y asistente conversacional), RF-16 (código de barras), RF-18/19/20 (reportes y
 exportación), RF-21 (notificaciones), inicio de sesión con Google/Microsoft.
 

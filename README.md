@@ -11,14 +11,17 @@ Implementado y funcional en simulador iOS / emulador Android:
 - Perfil de usuario y objetivos nutricionales — RF-02, RF-03
 - Captura de foto (cámara/galería) con reconocimiento de alimentos **simulado**
   (`MockFoodRecognitionService`) y registro manual — RF-04, RF-05 (mock), RF-06, RF-07, RF-08
-- Despensa con categorías, cantidades y vencimientos — RF-11
+- Despensa con categorías, cantidades y vencimientos, agregada manualmente o vía **factura en PDF**
+  con extracción **real** de texto (`CsuInvoiceParsingService`, formato "Tiquete Electrónico" de
+  Supermercados Unidos/CSU/Automercado) y pantalla de revisión antes de guardar — RF-09, RF-10, RF-11
 - Panel principal con calorías/macros del día — RF-17
 - Interfaz completamente en español
 - Base de datos local cifrada con SQLCipher (AES-256), clave en Keychain/Keystore — Sección 4
 
 Pendiente (documentado en `docs/ERS.md` Sección 9, no implementado aún): reconocimiento de IA
-real, OCR de facturas, planificador con IA, asistente conversacional, código de barras, reportes
-semanales/exportación, notificaciones, inicio de sesión con Google/Microsoft.
+real y OCR real (ambos detrás de servicios ya preparados para recibir la implementación real),
+planificador con IA, asistente conversacional, código de barras, reportes semanales/exportación,
+notificaciones, inicio de sesión con Google/Microsoft.
 
 ## Requisitos
 
@@ -51,6 +54,22 @@ flutter test
    que llame a ese backend.
 3. Cambiar la implementación devuelta por `foodRecognitionServiceProvider` en
    [lib/presentation/food_log/providers/food_log_providers.dart](lib/presentation/food_log/providers/food_log_providers.dart).
+
+## Facturas de otros supermercados / con OCR real
+
+`CsuInvoiceParsingService` ([lib/data/services/csu_invoice_parsing_service.dart](lib/data/services/csu_invoice_parsing_service.dart))
+solo reconoce el formato de factura electrónica de Supermercados Unidos (CSU/Automercado), ya que
+parsea el texto real embebido en ese PDF. Para otro supermercado o para facturas fotografiadas
+(sin capa de texto):
+
+1. Si el nuevo formato también es un PDF con texto, ajustar/duplicar el patrón de expresión
+   regular en `CsuInvoiceParsingService`.
+2. Si requiere OCR o visión por IA (foto de una factura impresa), esa lógica debe correr detrás de
+   un backend propio — nunca con una clave de API embebida en la app.
+3. Crear una nueva clase que implemente `InvoiceParsingService`
+   ([lib/data/services/invoice_parsing_service.dart](lib/data/services/invoice_parsing_service.dart))
+   y cambiar la implementación devuelta por `invoiceParsingServiceProvider` en
+   [lib/presentation/pantry/providers/pantry_providers.dart](lib/presentation/pantry/providers/pantry_providers.dart).
 
 ## Activar inicio de sesión con Google/Microsoft
 

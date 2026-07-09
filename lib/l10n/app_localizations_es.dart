@@ -365,6 +365,38 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pantrySaveItem => 'Guardar producto';
 
   @override
+  String get pantryUploadInvoice => 'Cargar factura del súper';
+
+  @override
+  String get pantryAddManually => 'Agregar manualmente';
+
+  @override
+  String get invoiceReviewTitle => 'Revisar factura';
+
+  @override
+  String get invoiceAnalyzing => 'Analizando factura...';
+
+  @override
+  String get invoiceReviewSubtitle =>
+      'Confirma o corrige los productos detectados antes de agregarlos a tu despensa';
+
+  @override
+  String get invoiceItemIncluded => 'Incluir este producto';
+
+  @override
+  String get invoiceSaveAll => 'Agregar a la despensa';
+
+  @override
+  String get invoiceItemsSaved => 'Productos agregados a la despensa';
+
+  @override
+  String get invoiceNoFileSelected => 'No se seleccionó ningún archivo';
+
+  @override
+  String get invoiceParsingError =>
+      'No se pudo leer la factura. Intenta de nuevo o agrega los productos manualmente.';
+
+  @override
   String get settingsTitle => 'Configuración';
 
   @override

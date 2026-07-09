@@ -55,6 +55,12 @@ dependencies:
   # Camera / gallery capture
   image_picker: ^1.1.2
 
+  # Invoice/receipt file selection (PDF) for pantry auto-fill
+  file_selector: ^1.0.3
+
+  # Pure-Dart PDF text extraction (no native platform code) for real invoice parsing
+  syncfusion_flutter_pdf: ^34.1.30
+
   # Password hashing
   crypto: ^3.0.6
 

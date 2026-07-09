@@ -126,6 +126,17 @@
   "pantryExpired": "Vencido",
   "pantryEmpty": "Tu despensa está vacía",
   "pantrySaveItem": "Guardar producto",
+  "pantryUploadInvoice": "Cargar factura del súper",
+  "pantryAddManually": "Agregar manualmente",
+
+  "invoiceReviewTitle": "Revisar factura",
+  "invoiceAnalyzing": "Analizando factura...",
+  "invoiceReviewSubtitle": "Confirma o corrige los productos detectados antes de agregarlos a tu despensa",
+  "invoiceItemIncluded": "Incluir este producto",
+  "invoiceSaveAll": "Agregar a la despensa",
+  "invoiceItemsSaved": "Productos agregados a la despensa",
+  "invoiceNoFileSelected": "No se seleccionó ningún archivo",
+  "invoiceParsingError": "No se pudo leer la factura. Intenta de nuevo o agrega los productos manualmente.",
 
   "settingsTitle": "Configuración",
   "settingsEditProfile": "Editar perfil",

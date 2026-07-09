@@ -802,6 +802,66 @@ abstract class AppLocalizations {
   /// **'Guardar producto'**
   String get pantrySaveItem;
 
+  /// No description provided for @pantryUploadInvoice.
+  ///
+  /// In es, this message translates to:
+  /// **'Cargar factura del súper'**
+  String get pantryUploadInvoice;
+
+  /// No description provided for @pantryAddManually.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar manualmente'**
+  String get pantryAddManually;
+
+  /// No description provided for @invoiceReviewTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Revisar factura'**
+  String get invoiceReviewTitle;
+
+  /// No description provided for @invoiceAnalyzing.
+  ///
+  /// In es, this message translates to:
+  /// **'Analizando factura...'**
+  String get invoiceAnalyzing;
+
+  /// No description provided for @invoiceReviewSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirma o corrige los productos detectados antes de agregarlos a tu despensa'**
+  String get invoiceReviewSubtitle;
+
+  /// No description provided for @invoiceItemIncluded.
+  ///
+  /// In es, this message translates to:
+  /// **'Incluir este producto'**
+  String get invoiceItemIncluded;
+
+  /// No description provided for @invoiceSaveAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar a la despensa'**
+  String get invoiceSaveAll;
+
+  /// No description provided for @invoiceItemsSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Productos agregados a la despensa'**
+  String get invoiceItemsSaved;
+
+  /// No description provided for @invoiceNoFileSelected.
+  ///
+  /// In es, this message translates to:
+  /// **'No se seleccionó ningún archivo'**
+  String get invoiceNoFileSelected;
+
+  /// No description provided for @invoiceParsingError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo leer la factura. Intenta de nuevo o agrega los productos manualmente.'**
+  String get invoiceParsingError;
+
   /// No description provided for @settingsTitle.
   ///
   /// In es, this message translates to:
