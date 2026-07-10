@@ -28,6 +28,12 @@ class SqlitePantryRepository implements PantryRepository {
   }
 
   @override
+  Future<void> deleteAllItems(int userId) async {
+    final db = await AppDatabase.instance.database;
+    await db.delete('pantry_items', where: 'user_id = ?', whereArgs: [userId]);
+  }
+
+  @override
   Future<List<PantryItem>> allItems(int userId) async {
     final db = await AppDatabase.instance.database;
     final rows = await db.query(

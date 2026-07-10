@@ -61,9 +61,37 @@ class _InvoiceReviewScreenState extends ConsumerState<InvoiceReviewScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Text(l10n.invoiceReviewSubtitle,
                   style: Theme.of(context).textTheme.bodyMedium),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.errorContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.warning_amber_rounded,
+                        color: Theme.of(context).colorScheme.onErrorContainer,
+                        size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        l10n.invoiceReplaceWarning,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onErrorContainer,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             Expanded(
               child: ListView.separated(
@@ -144,6 +172,28 @@ class _InvoiceReviewScreenState extends ConsumerState<InvoiceReviewScreen> {
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) return;
 
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.invoiceReplaceConfirmTitle),
+        content: Text(l10n.invoiceReplaceConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.settingsCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(ctx).colorScheme.error),
+            child: Text(l10n.invoiceReplaceConfirmButton),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
     setState(() => _saving = true);
 
     final now = DateTime.now();
@@ -159,10 +209,11 @@ class _InvoiceReviewScreenState extends ConsumerState<InvoiceReviewScreen> {
       );
     }).toList();
 
-    await ref.read(pantryControllerProvider.notifier).addItems(items);
+    await ref
+        .read(pantryControllerProvider.notifier)
+        .replaceAllWithInvoiceItems(items);
 
     if (mounted) {
-      final l10n = AppLocalizations.of(context)!;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.invoiceItemsSaved)));

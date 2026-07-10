@@ -455,16 +455,31 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get invoiceReviewSubtitle =>
-      'Confirma o corrige los productos detectados antes de agregarlos a tu despensa';
+      'Confirma o corrige los productos detectados antes de guardarlos en tu despensa';
+
+  @override
+  String get invoiceReplaceWarning =>
+      'Al guardar, esta lista reemplazará todos los productos actuales de tu despensa (incluidos los que agregaste a mano). Esta acción no se puede deshacer.';
 
   @override
   String get invoiceItemIncluded => 'Incluir este producto';
 
   @override
-  String get invoiceSaveAll => 'Agregar a la despensa';
+  String get invoiceSaveAll => 'Reemplazar despensa';
 
   @override
-  String get invoiceItemsSaved => 'Productos agregados a la despensa';
+  String get invoiceItemsSaved =>
+      'Despensa actualizada con los productos de la factura';
+
+  @override
+  String get invoiceReplaceConfirmTitle => '¿Reemplazar toda la despensa?';
+
+  @override
+  String get invoiceReplaceConfirmMessage =>
+      'Se eliminarán todos los productos actuales de tu despensa y se reemplazarán por los de esta factura. Esta acción no se puede deshacer.';
+
+  @override
+  String get invoiceReplaceConfirmButton => 'Sí, reemplazar';
 
   @override
   String get invoiceNoFileSelected => 'No se seleccionó ningún archivo';

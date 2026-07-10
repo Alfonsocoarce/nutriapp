@@ -156,10 +156,14 @@
 
   "invoiceReviewTitle": "Revisar factura",
   "invoiceAnalyzing": "Analizando factura...",
-  "invoiceReviewSubtitle": "Confirma o corrige los productos detectados antes de agregarlos a tu despensa",
+  "invoiceReviewSubtitle": "Confirma o corrige los productos detectados antes de guardarlos en tu despensa",
+  "invoiceReplaceWarning": "Al guardar, esta lista reemplazará todos los productos actuales de tu despensa (incluidos los que agregaste a mano). Esta acción no se puede deshacer.",
   "invoiceItemIncluded": "Incluir este producto",
-  "invoiceSaveAll": "Agregar a la despensa",
-  "invoiceItemsSaved": "Productos agregados a la despensa",
+  "invoiceSaveAll": "Reemplazar despensa",
+  "invoiceItemsSaved": "Despensa actualizada con los productos de la factura",
+  "invoiceReplaceConfirmTitle": "¿Reemplazar toda la despensa?",
+  "invoiceReplaceConfirmMessage": "Se eliminarán todos los productos actuales de tu despensa y se reemplazarán por los de esta factura. Esta acción no se puede deshacer.",
+  "invoiceReplaceConfirmButton": "Sí, reemplazar",
   "invoiceNoFileSelected": "No se seleccionó ningún archivo",
   "invoiceParsingError": "No se pudo leer la factura. Intenta de nuevo o agrega los productos manualmente.",
 

@@ -49,6 +49,21 @@ class PantryController extends StateNotifier<AsyncValue<List<PantryItem>>> {
     await reload();
   }
 
+  /// Replaces the entire pantry with [items] — used when saving a scanned
+  /// invoice: every prior item (from an earlier invoice scan or added
+  /// manually) is deleted first, so the pantry always reflects only the
+  /// most recent invoice rather than accumulating stale/duplicate stock
+  /// across shopping trips. This is intentionally destructive; the invoice
+  /// review screen warns the user before calling it.
+  Future<void> replaceAllWithInvoiceItems(List<PantryItem> items) async {
+    if (_userId == null) return;
+    await _repository.deleteAllItems(_userId);
+    for (final item in items) {
+      await _repository.addItem(item);
+    }
+    await reload();
+  }
+
   Future<void> updateItem(PantryItem item) async {
     await _repository.updateItem(item);
     await reload();

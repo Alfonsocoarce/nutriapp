@@ -973,8 +973,14 @@ abstract class AppLocalizations {
   /// No description provided for @invoiceReviewSubtitle.
   ///
   /// In es, this message translates to:
-  /// **'Confirma o corrige los productos detectados antes de agregarlos a tu despensa'**
+  /// **'Confirma o corrige los productos detectados antes de guardarlos en tu despensa'**
   String get invoiceReviewSubtitle;
+
+  /// No description provided for @invoiceReplaceWarning.
+  ///
+  /// In es, this message translates to:
+  /// **'Al guardar, esta lista reemplazará todos los productos actuales de tu despensa (incluidos los que agregaste a mano). Esta acción no se puede deshacer.'**
+  String get invoiceReplaceWarning;
 
   /// No description provided for @invoiceItemIncluded.
   ///
@@ -985,14 +991,32 @@ abstract class AppLocalizations {
   /// No description provided for @invoiceSaveAll.
   ///
   /// In es, this message translates to:
-  /// **'Agregar a la despensa'**
+  /// **'Reemplazar despensa'**
   String get invoiceSaveAll;
 
   /// No description provided for @invoiceItemsSaved.
   ///
   /// In es, this message translates to:
-  /// **'Productos agregados a la despensa'**
+  /// **'Despensa actualizada con los productos de la factura'**
   String get invoiceItemsSaved;
+
+  /// No description provided for @invoiceReplaceConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Reemplazar toda la despensa?'**
+  String get invoiceReplaceConfirmTitle;
+
+  /// No description provided for @invoiceReplaceConfirmMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Se eliminarán todos los productos actuales de tu despensa y se reemplazarán por los de esta factura. Esta acción no se puede deshacer.'**
+  String get invoiceReplaceConfirmMessage;
+
+  /// No description provided for @invoiceReplaceConfirmButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Sí, reemplazar'**
+  String get invoiceReplaceConfirmButton;
 
   /// No description provided for @invoiceNoFileSelected.
   ///
