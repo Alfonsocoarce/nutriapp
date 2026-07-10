@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../auth/providers/auth_providers.dart';
 import '../../dashboard/screens/dashboard_screen.dart';
 import '../../food_log/screens/food_log_screen.dart';
+import '../../onboarding/providers/onboarding_providers.dart';
+import '../../onboarding/screens/onboarding_screen.dart';
 import '../../pantry/screens/pantry_screen.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../../profile/screens/profile_setup_screen.dart';
@@ -21,11 +24,56 @@ class MainShell extends ConsumerStatefulWidget {
 
 class _MainShellState extends ConsumerState<MainShell> {
   int _tabIndex = 0;
+  bool _askedAboutOnboarding = false;
+
+  Future<void> _offerOnboarding() async {
+    final l10n = AppLocalizations.of(context)!;
+    final wantsTour = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.onboardingWelcomeDialogTitle),
+        content: Text(l10n.onboardingWelcomeDialogMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.onboardingWelcomeDialogDecline),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.onboardingWelcomeDialogAccept),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted) return;
+    if (wantsTour == true) {
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+      );
+    } else {
+      final userId = ref.read(currentUserIdProvider);
+      if (userId != null) {
+        await ref.read(onboardingStoreProvider).markOnboardingSeen(userId);
+        ref.invalidate(hasSeenOnboardingProvider);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final profileAsync = ref.watch(profileControllerProvider);
+
+    ref.listen<AsyncValue<bool>>(hasSeenOnboardingProvider, (previous, next) {
+      final seen = next.valueOrNull;
+      if (seen == false && !_askedAboutOnboarding) {
+        _askedAboutOnboarding = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _offerOnboarding();
+        });
+      }
+    });
 
     return profileAsync.when(
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),

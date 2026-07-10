@@ -125,6 +125,7 @@
   "reportsCaloriesChartTitle": "Calorías por día",
   "reportsTopFoods": "Alimentos más consumidos",
   "reportsNoEntriesThisDay": "Sin registros",
+  "reportsShareSubject": "Mi resumen semanal de NutriApp",
 
   "pantryTitle": "Despensa",
   "pantryAddItem": "Agregar producto",
@@ -205,5 +206,24 @@
   "commonKg": "kg",
   "commonCm": "cm",
   "commonKcal": "kcal",
-  "commonGrams": "g"
+  "commonGrams": "g",
+
+  "onboardingWelcomeDialogTitle": "¡Bienvenido/a a NutriApp!",
+  "onboardingWelcomeDialogMessage": "¿Quieres un recorrido rápido para conocer cada parte de la app antes de empezar?",
+  "onboardingWelcomeDialogAccept": "Ver recorrido",
+  "onboardingWelcomeDialogDecline": "Ahora no",
+  "onboardingSkip": "Omitir",
+  "onboardingNext": "Siguiente",
+  "onboardingFinish": "Comenzar",
+  "onboardingPage1Title": "Panel principal",
+  "onboardingPage1Description": "Tu resumen del día: calorías y macronutrientes consumidos frente a tu meta, tu peso actual y las comidas que ya registraste hoy.",
+  "onboardingPage2Title": "Registrar comida",
+  "onboardingPage2Description": "Toma una foto de tu plato o de la etiqueta de un producto envasado. La IA identifica los alimentos, estima las porciones y calcula la información nutricional automáticamente.",
+  "onboardingPage3Title": "Despensa",
+  "onboardingPage3Description": "Controla lo que tienes en casa: categorías, cantidades y fechas de vencimiento. Agrega productos a mano o escaneando la factura de tu supermercado.",
+  "onboardingPage4Title": "Resumen semanal",
+  "onboardingPage4Description": "Consulta tus calorías día a día, los alimentos que más consumes, y genera un PDF con recomendaciones nutricionales personalizadas listo para compartir.",
+  "onboardingPage5Title": "Configuración",
+  "onboardingPage5Description": "Edita tu perfil y objetivos, agrega tu clave de IA para el reconocimiento de fotos, y administra tus datos.",
+  "settingsReplayTutorial": "Ver el recorrido de la app"
 }

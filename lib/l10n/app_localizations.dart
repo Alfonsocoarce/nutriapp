@@ -796,6 +796,12 @@ abstract class AppLocalizations {
   /// **'Sin registros'**
   String get reportsNoEntriesThisDay;
 
+  /// No description provided for @reportsShareSubject.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi resumen semanal de NutriApp'**
+  String get reportsShareSubject;
+
   /// No description provided for @pantryTitle.
   ///
   /// In es, this message translates to:
@@ -1251,6 +1257,114 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'g'**
   String get commonGrams;
+
+  /// No description provided for @onboardingWelcomeDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Bienvenido/a a NutriApp!'**
+  String get onboardingWelcomeDialogTitle;
+
+  /// No description provided for @onboardingWelcomeDialogMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Quieres un recorrido rápido para conocer cada parte de la app antes de empezar?'**
+  String get onboardingWelcomeDialogMessage;
+
+  /// No description provided for @onboardingWelcomeDialogAccept.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver recorrido'**
+  String get onboardingWelcomeDialogAccept;
+
+  /// No description provided for @onboardingWelcomeDialogDecline.
+  ///
+  /// In es, this message translates to:
+  /// **'Ahora no'**
+  String get onboardingWelcomeDialogDecline;
+
+  /// No description provided for @onboardingSkip.
+  ///
+  /// In es, this message translates to:
+  /// **'Omitir'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In es, this message translates to:
+  /// **'Siguiente'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingFinish.
+  ///
+  /// In es, this message translates to:
+  /// **'Comenzar'**
+  String get onboardingFinish;
+
+  /// No description provided for @onboardingPage1Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Panel principal'**
+  String get onboardingPage1Title;
+
+  /// No description provided for @onboardingPage1Description.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu resumen del día: calorías y macronutrientes consumidos frente a tu meta, tu peso actual y las comidas que ya registraste hoy.'**
+  String get onboardingPage1Description;
+
+  /// No description provided for @onboardingPage2Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrar comida'**
+  String get onboardingPage2Title;
+
+  /// No description provided for @onboardingPage2Description.
+  ///
+  /// In es, this message translates to:
+  /// **'Toma una foto de tu plato o de la etiqueta de un producto envasado. La IA identifica los alimentos, estima las porciones y calcula la información nutricional automáticamente.'**
+  String get onboardingPage2Description;
+
+  /// No description provided for @onboardingPage3Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Despensa'**
+  String get onboardingPage3Title;
+
+  /// No description provided for @onboardingPage3Description.
+  ///
+  /// In es, this message translates to:
+  /// **'Controla lo que tienes en casa: categorías, cantidades y fechas de vencimiento. Agrega productos a mano o escaneando la factura de tu supermercado.'**
+  String get onboardingPage3Description;
+
+  /// No description provided for @onboardingPage4Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Resumen semanal'**
+  String get onboardingPage4Title;
+
+  /// No description provided for @onboardingPage4Description.
+  ///
+  /// In es, this message translates to:
+  /// **'Consulta tus calorías día a día, los alimentos que más consumes, y genera un PDF con recomendaciones nutricionales personalizadas listo para compartir.'**
+  String get onboardingPage4Description;
+
+  /// No description provided for @onboardingPage5Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Configuración'**
+  String get onboardingPage5Title;
+
+  /// No description provided for @onboardingPage5Description.
+  ///
+  /// In es, this message translates to:
+  /// **'Edita tu perfil y objetivos, agrega tu clave de IA para el reconocimiento de fotos, y administra tus datos.'**
+  String get onboardingPage5Description;
+
+  /// No description provided for @settingsReplayTutorial.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver el recorrido de la app'**
+  String get settingsReplayTutorial;
 }
 
 class _AppLocalizationsDelegate

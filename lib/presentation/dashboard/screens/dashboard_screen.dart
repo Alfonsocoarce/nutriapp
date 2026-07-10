@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/localization/enum_labels.dart';
+import '../../../core/theme/chart_colors.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../providers/dashboard_providers.dart';
@@ -121,6 +122,7 @@ class _CalorieRing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fraction = goal <= 0 ? 0.0 : (consumed / goal).clamp(0, 1).toDouble();
+    final overGoal = goal > 0 && consumed > goal;
     return SizedBox(
       height: 200,
       child: Stack(
@@ -134,13 +136,13 @@ class _CalorieRing extends StatelessWidget {
               sections: [
                 PieChartSectionData(
                   value: fraction * 100,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: overGoal ? ChartColors.red : ChartColors.blue,
                   showTitle: false,
                   radius: 22,
                 ),
                 PieChartSectionData(
                   value: (1 - fraction) * 100,
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  color: ChartColors.neutral.withValues(alpha: 0.3),
                   showTitle: false,
                   radius: 22,
                 ),
@@ -185,11 +187,7 @@ class _MacroDistributionChart extends StatelessWidget {
     final fatKcal = fatGrams * 9;
     final total = proteinKcal + carbsKcal + fatKcal;
 
-    final colors = [
-      theme.colorScheme.primary,
-      theme.colorScheme.tertiary,
-      theme.colorScheme.secondary,
-    ];
+    final colors = [ChartColors.blue, ChartColors.red, ChartColors.amber];
     final entries = [
       (l10n.dashboardProtein, proteinGrams, proteinKcal, colors[0]),
       (l10n.dashboardCarbs, carbsGrams, carbsKcal, colors[1]),

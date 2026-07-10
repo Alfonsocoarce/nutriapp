@@ -104,5 +104,56 @@ void main() {
     test('returns an empty list for no entries', () {
       expect(computeTopFoods(const []), isEmpty);
     });
+
+    test('splits a whole-plate name into ingredient tokens when there are no components', () {
+      final entries = [
+        _entry(
+          foodName: 'Desayuno con huevos, plátano maduro, aguacate, pan y jugo de naranja',
+          calories: 750,
+        ),
+      ];
+
+      final top = computeTopFoods(entries, limit: 10);
+      final names = top.map((f) => f.name.toLowerCase()).toList();
+
+      expect(names, contains('huevos'));
+      expect(names, contains('plátano maduro'));
+      expect(names, contains('aguacate'));
+      expect(names, contains('pan'));
+      expect(names, contains('jugo de naranja'));
+      expect(names, isNot(contains('desayuno')));
+    });
+
+    test('does not split a single-item name with no connectors', () {
+      final entries = [_entry(foodName: 'Bebida láctea Yes!', calories: 160)];
+
+      final top = computeTopFoods(entries);
+
+      expect(top, hasLength(1));
+      expect(top.first.name, 'Bebida láctea Yes!');
+      expect(top.first.totalCalories, 160);
+    });
+
+    test('does not attribute calories to guessed split tokens', () {
+      final entries = [_entry(foodName: 'Arroz con pollo', calories: 500)];
+
+      final top = computeTopFoods(entries);
+
+      expect(top.every((f) => f.totalCalories == 0), isTrue);
+    });
+
+    test('merges split tokens across entries with real per-component data', () {
+      final entries = [
+        _entry(foodName: 'Ensalada con aguacate y pollo', calories: 300),
+        _entry(foodName: 'Desayuno', components: const [
+          FoodComponentBreakdown(name: 'aguacate', calories: 100),
+        ]),
+      ];
+
+      final top = computeTopFoods(entries);
+      final aguacate = top.firstWhere((f) => f.name.toLowerCase() == 'aguacate');
+
+      expect(aguacate.count, 2);
+    });
   });
 }

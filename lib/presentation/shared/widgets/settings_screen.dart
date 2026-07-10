@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/local/app_database.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/providers/auth_providers.dart';
+import '../../onboarding/screens/onboarding_screen.dart';
 import '../../profile/screens/profile_setup_screen.dart';
 import '../../settings/providers/api_key_providers.dart';
 
@@ -36,6 +37,13 @@ class SettingsScreen extends ConsumerWidget {
             ListTile(
               leading: const Icon(Icons.notifications_outlined),
               title: Text(l10n.settingsNotifications),
+            ),
+            ListTile(
+              leading: const Icon(Icons.help_outline),
+              title: Text(l10n.settingsReplayTutorial),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.ios_share),

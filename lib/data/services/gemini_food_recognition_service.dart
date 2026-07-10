@@ -267,6 +267,6 @@ Reglas importantes:
       'sodiumMilligrams': {'type': 'NUMBER', 'nullable': true},
       'cholesterolMilligrams': {'type': 'NUMBER', 'nullable': true},
     },
-    'required': ['foodName', 'ingredients', 'confidence'],
+    'required': ['foodName', 'ingredients', 'confidence', 'components'],
   };
 }

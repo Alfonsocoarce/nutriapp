@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../core/theme/chart_colors.dart';
 import '../../../data/services/weekly_report_pdf_service.dart';
 import '../../../domain/entities/food_frequency.dart';
 import '../../../domain/entities/weekly_summary.dart';
@@ -35,7 +36,11 @@ class _WeeklyReportScreenState extends ConsumerState<WeeklyReportScreen> {
           );
       ref.invalidate(generatedReportsProvider);
       if (!mounted) return;
-      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
+      await SharePlus.instance.share(ShareParams(
+        files: [XFile(file.path, mimeType: 'application/pdf')],
+        subject: l10n.reportsShareSubject,
+        text: l10n.reportsShareSubject,
+      ));
       if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.reportsGeneratedSnackbar)));
@@ -131,8 +136,11 @@ class _WeeklyReportScreenState extends ConsumerState<WeeklyReportScreen> {
                                 trailing: IconButton(
                                   icon: const Icon(Icons.share),
                                   tooltip: l10n.reportsShare,
-                                  onPressed: () => SharePlus.instance
-                                      .share(ShareParams(files: [XFile(f.path)])),
+                                  onPressed: () => SharePlus.instance.share(ShareParams(
+                                    files: [XFile(f.path, mimeType: 'application/pdf')],
+                                    subject: l10n.reportsShareSubject,
+                                    text: l10n.reportsShareSubject,
+                                  )),
                                 ),
                               ))
                           .toList(),
@@ -203,8 +211,8 @@ class _WeeklyReportBody extends StatelessWidget {
                         '${day.calorieDifference >= 0 ? '+' : ''}${day.calorieDifference.round()}',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: day.calorieDifference > 0
-                              ? theme.colorScheme.error
-                              : theme.colorScheme.primary,
+                              ? ChartColors.red
+                              : ChartColors.blue,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -315,10 +323,10 @@ class _CaloriesBarChart extends StatelessWidget {
                   width: 18,
                   borderRadius: BorderRadius.circular(4),
                   color: summary.days[i].mealCount == 0
-                      ? theme.colorScheme.surfaceContainerHighest
+                      ? ChartColors.neutral
                       : summary.days[i].caloriesConsumed > goal
-                          ? theme.colorScheme.error
-                          : theme.colorScheme.primary,
+                          ? ChartColors.red
+                          : ChartColors.blue,
                 ),
               ]),
           ],
@@ -364,8 +372,8 @@ class _TopFoodsChart extends StatelessWidget {
                 child: LinearProgressIndicator(
                   value: fraction,
                   minHeight: 8,
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                  color: theme.colorScheme.primary,
+                  backgroundColor: ChartColors.neutral.withValues(alpha: 0.3),
+                  color: ChartColors.amber,
                 ),
               ),
             ],

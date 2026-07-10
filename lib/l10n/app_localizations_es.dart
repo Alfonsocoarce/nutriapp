@@ -367,6 +367,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reportsNoEntriesThisDay => 'Sin registros';
 
   @override
+  String get reportsShareSubject => 'Mi resumen semanal de NutriApp';
+
+  @override
   String get pantryTitle => 'Despensa';
 
   @override
@@ -601,4 +604,64 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get commonGrams => 'g';
+
+  @override
+  String get onboardingWelcomeDialogTitle => '¡Bienvenido/a a NutriApp!';
+
+  @override
+  String get onboardingWelcomeDialogMessage =>
+      '¿Quieres un recorrido rápido para conocer cada parte de la app antes de empezar?';
+
+  @override
+  String get onboardingWelcomeDialogAccept => 'Ver recorrido';
+
+  @override
+  String get onboardingWelcomeDialogDecline => 'Ahora no';
+
+  @override
+  String get onboardingSkip => 'Omitir';
+
+  @override
+  String get onboardingNext => 'Siguiente';
+
+  @override
+  String get onboardingFinish => 'Comenzar';
+
+  @override
+  String get onboardingPage1Title => 'Panel principal';
+
+  @override
+  String get onboardingPage1Description =>
+      'Tu resumen del día: calorías y macronutrientes consumidos frente a tu meta, tu peso actual y las comidas que ya registraste hoy.';
+
+  @override
+  String get onboardingPage2Title => 'Registrar comida';
+
+  @override
+  String get onboardingPage2Description =>
+      'Toma una foto de tu plato o de la etiqueta de un producto envasado. La IA identifica los alimentos, estima las porciones y calcula la información nutricional automáticamente.';
+
+  @override
+  String get onboardingPage3Title => 'Despensa';
+
+  @override
+  String get onboardingPage3Description =>
+      'Controla lo que tienes en casa: categorías, cantidades y fechas de vencimiento. Agrega productos a mano o escaneando la factura de tu supermercado.';
+
+  @override
+  String get onboardingPage4Title => 'Resumen semanal';
+
+  @override
+  String get onboardingPage4Description =>
+      'Consulta tus calorías día a día, los alimentos que más consumes, y genera un PDF con recomendaciones nutricionales personalizadas listo para compartir.';
+
+  @override
+  String get onboardingPage5Title => 'Configuración';
+
+  @override
+  String get onboardingPage5Description =>
+      'Edita tu perfil y objetivos, agrega tu clave de IA para el reconocimiento de fotos, y administra tus datos.';
+
+  @override
+  String get settingsReplayTutorial => 'Ver el recorrido de la app';
 }
