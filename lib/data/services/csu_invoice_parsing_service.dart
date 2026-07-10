@@ -32,9 +32,26 @@ final _lineItemPattern = RegExp(
   multiLine: true,
 );
 
+/// Title-cases an ALL-CAPS receipt line ("RIB EYE KG" -> "Rib Eye Kg") so
+/// items read as recognizable product names instead of shouty abbreviated
+/// codes. Purely cosmetic — doesn't expand abbreviations or invent words,
+/// and the review screen still lets the user edit it further.
+String _toTitleCase(String input) {
+  return input
+      .toLowerCase()
+      .split(' ')
+      .map((word) => word.isEmpty ? word : word[0].toUpperCase() + word.substring(1))
+      .join(' ');
+}
+
 /// Parses already-extracted invoice text. Split out from
 /// [CsuInvoiceParsingService.parseInvoice] so the line-matching logic is
 /// unit-testable without needing a real PDF file on disk.
+///
+/// Lines that don't match a known food keyword are dropped rather than
+/// guessed into a category — grocery receipts also list non-food products
+/// (paper goods, cleaning supplies, personal care), and those don't belong
+/// in a food pantry. See [InvoiceCategoryGuesser] for the reasoning.
 List<InvoiceLineItem> parseCsuInvoiceText(String text) {
   // PdfTextExtractor emits CRLF ("\r\n") line endings; normalize to "\n" so
   // the line-anchored pattern above matches regardless of the extractor's
@@ -47,13 +64,16 @@ List<InvoiceLineItem> parseCsuInvoiceText(String text) {
     final quantity = double.tryParse(match.group(2)!) ?? 1;
     if (description.isEmpty) continue;
 
+    final category = InvoiceCategoryGuesser.guess(description);
+    if (category == null) continue;
+
     items.add(InvoiceLineItem(
-      productName: description,
+      productName: _toTitleCase(description),
       quantity: quantity,
       // Weighed produce comes through as a fractional kg quantity;
       // whole-number quantities are discrete packaged units.
       unit: quantity == quantity.roundToDouble() ? 'unidad' : 'kg',
-      category: InvoiceCategoryGuesser.guess(description),
+      category: category,
       price: double.tryParse(match.group(5)!.replaceAll(',', '')),
     ));
   }

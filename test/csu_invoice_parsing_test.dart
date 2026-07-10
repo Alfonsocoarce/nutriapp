@@ -6,8 +6,9 @@ import 'package:nutriapp/domain/entities/pantry_category.dart';
 // Supermercados Unidos), reproduced verbatim from Syncfusion's
 // PdfTextExtractor output. Extraction is field-per-line, not left-to-right
 // per visual row: each product is DESCRIPCIÓN, CANTIDAD, PRECIO UNITARIO,
-// CÓDIGO, MONTO across five consecutive lines. Header/footer noise is
-// included so the parser is verified to ignore it.
+// CÓDIGO, MONTO across five consecutive lines. Header/footer noise, and two
+// non-food lines ("YU SE" and "PAPEL 4R1000", a toilet-paper pack), are
+// included so the parser is verified to ignore/drop them.
 const _sampleInvoiceText = '''
 Tiquete Electrónico ver. 4.4
 CÓDIGO
@@ -77,53 +78,60 @@ void main() {
   group('parseCsuInvoiceText', () {
     final items = parseCsuInvoiceText(_sampleInvoiceText);
 
-    test('extracts every product line and ignores header/footer noise', () {
-      expect(items, hasLength(9));
+    test('extracts every recognized food line and ignores header/footer noise', () {
+      expect(items, hasLength(7));
+    });
+
+    test('drops non-food lines instead of guessing a category for them', () {
+      final names = items.map((i) => i.productName).toList();
+      expect(names, isNot(contains('Yu Se')));
+      expect(names.any((n) => n.toLowerCase().contains('papel')), isFalse);
+    });
+
+    test('title-cases the shouty ALL-CAPS receipt text for readability', () {
+      expect(items.map((i) => i.productName), contains('Rib Eye Kg'));
+      expect(items.map((i) => i.productName), contains('Queso Mozz'));
     });
 
     test('parses fractional (weighed) quantities as kg', () {
-      final ribEye = items.firstWhere((i) => i.productName == 'RIB EYE KG');
+      final ribEye = items.firstWhere((i) => i.productName == 'Rib Eye Kg');
       expect(ribEye.quantity, 0.40);
       expect(ribEye.unit, 'kg');
       expect(ribEye.price, 3468.00);
     });
 
     test('parses whole-number quantities as unidad', () {
-      final yogurt = items.firstWhere((i) => i.productName == 'YOGURT ALMEN');
+      final yogurt = items.firstWhere((i) => i.productName == 'Yogurt Almen');
       expect(yogurt.quantity, 5);
       expect(yogurt.unit, 'unidad');
     });
 
     test('does not confuse descriptions containing embedded numbers', () {
-      final uva = items.firstWhere((i) => i.productName == 'UVA VE 500 G');
+      final uva = items.firstWhere((i) => i.productName == 'Uva Ve 500 G');
       expect(uva.quantity, 1.00);
       expect(uva.price, 1350.00);
 
-      final papel = items.firstWhere((i) => i.productName == 'PAPEL 4R1000');
-      expect(papel.quantity, 1.00);
-      expect(papel.price, 1500.00);
-
-      final cereal = items.firstWhere((i) => i.productName == 'CEREAL 10 PK');
+      final cereal = items.firstWhere((i) => i.productName == 'Cereal 10 Pk');
       expect(cereal.quantity, 1.00);
       expect(cereal.price, 1380.00);
     });
 
     test('pairs each product with its own quantity and price, not a neighbor\'s', () {
-      final platan = items.firstWhere((i) => i.productName == 'PLATAN UNI');
+      final platan = items.firstWhere((i) => i.productName == 'Platan Uni');
       expect(platan.quantity, 2.00);
       expect(platan.price, 620.00);
 
-      final queso = items.firstWhere((i) => i.productName == 'QUESO MOZZ');
+      final queso = items.firstWhere((i) => i.productName == 'Queso Mozz');
       expect(queso.quantity, 1.00);
       expect(queso.price, 1950.00);
     });
 
     test('guesses plausible categories from Spanish keywords', () {
-      expect(items.firstWhere((i) => i.productName == 'PLATAN UNI').category,
+      expect(items.firstWhere((i) => i.productName == 'Platan Uni').category,
           PantryCategory.fruits);
-      expect(items.firstWhere((i) => i.productName == 'QUESO MOZZ').category,
+      expect(items.firstWhere((i) => i.productName == 'Queso Mozz').category,
           PantryCategory.dairy);
-      expect(items.firstWhere((i) => i.productName == 'RIB EYE KG').category,
+      expect(items.firstWhere((i) => i.productName == 'Rib Eye Kg').category,
           PantryCategory.meats);
     });
 
