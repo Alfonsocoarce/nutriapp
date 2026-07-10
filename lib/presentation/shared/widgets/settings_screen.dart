@@ -20,7 +20,12 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: SafeArea(
-        child: ListView(
+        child: ListTileTheme(
+          data: const ListTileThemeData(
+            dense: true,
+            visualDensity: VisualDensity.compact,
+          ),
+          child: ListView(
           children: [
             ListTile(
               leading: const Icon(Icons.person_outline),
@@ -79,6 +84,7 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => ref.read(authControllerProvider.notifier).logout(),
             ),
           ],
+          ),
         ),
       ),
     );

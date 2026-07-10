@@ -1081,13 +1081,13 @@ abstract class AppLocalizations {
   /// No description provided for @settingsApiKeySubtitleSet.
   ///
   /// In es, this message translates to:
-  /// **'Configurada — el reconocimiento de fotos está activo'**
+  /// **'Configurada en este dispositivo — el reconocimiento de fotos está activo para todas las cuentas que inicien sesión aquí'**
   String get settingsApiKeySubtitleSet;
 
   /// No description provided for @settingsApiKeySubtitleUnset.
   ///
   /// In es, this message translates to:
-  /// **'Sin configurar — el reconocimiento de fotos no funcionará'**
+  /// **'Sin configurar en este dispositivo — el reconocimiento de fotos no funcionará'**
   String get settingsApiKeySubtitleUnset;
 
   /// No description provided for @settingsApiKeyDialogTitle.
@@ -1099,7 +1099,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsApiKeyDialogDescription.
   ///
   /// In es, this message translates to:
-  /// **'NutriApp usa Gemini Vision para identificar alimentos en tus fotos. Obtén una clave gratuita en aistudio.google.com/app/apikey y pégala aquí. Se guarda cifrada únicamente en este dispositivo.'**
+  /// **'NutriApp usa Gemini Vision para identificar alimentos en tus fotos. Obtén una clave gratuita en aistudio.google.com/app/apikey y pégala aquí. Se guarda cifrada una sola vez en este dispositivo y la usan automáticamente todas las cuentas que inicien sesión en él — no es necesario repetir este paso por cada cuenta, solo una vez por dispositivo (por ejemplo, una vez en tu teléfono Android y una vez en tu iPhone).'**
   String get settingsApiKeyDialogDescription;
 
   /// No description provided for @settingsApiKeyFieldLabel.

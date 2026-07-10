@@ -130,9 +130,12 @@ class _WeeklyReportScreenState extends ConsumerState<WeeklyReportScreen> {
                   : Column(
                       children: files
                           .map((f) => ListTile(
+                                dense: true,
+                                visualDensity: VisualDensity.compact,
                                 contentPadding: EdgeInsets.zero,
                                 leading: const Icon(Icons.picture_as_pdf_outlined),
-                                title: Text(f.uri.pathSegments.last),
+                                title: Text(f.uri.pathSegments.last,
+                                    maxLines: 1, overflow: TextOverflow.ellipsis),
                                 trailing: IconButton(
                                   icon: const Icon(Icons.share),
                                   tooltip: l10n.reportsShare,

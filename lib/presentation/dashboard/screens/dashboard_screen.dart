@@ -88,12 +88,12 @@ class DashboardScreen extends ConsumerWidget {
                         child: Text(l10n.dashboardNoMealsYet),
                       )
                     else
-                      ...progress.meals.map((meal) => ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(meal.foodName),
-                            subtitle: Text(meal.mealType.label(l10n)),
-                            trailing: Text(
-                                '${meal.nutrition.calories?.toStringAsFixed(0) ?? l10n.foodLogNotAvailable} ${l10n.commonKcal}'),
+                      ...progress.meals.map((meal) => _MealRow(
+                            name: meal.foodName,
+                            mealTypeLabel: meal.mealType.label(l10n),
+                            calorieText: meal.nutrition.calories?.toStringAsFixed(0) ??
+                                l10n.foodLogNotAvailable,
+                            l10n: l10n,
                           )),
                   ],
                 );
@@ -101,6 +101,54 @@ class DashboardScreen extends ConsumerWidget {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+class _MealRow extends StatelessWidget {
+  const _MealRow({
+    required this.name,
+    required this.mealTypeLabel,
+    required this.calorieText,
+    required this.l10n,
+  });
+
+  final String name;
+  final String mealTypeLabel;
+  final String calorieText;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: theme.textTheme.bodyMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  mealTypeLabel,
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text('$calorieText ${l10n.commonKcal}',
+              style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600)),
+        ],
       ),
     );
   }

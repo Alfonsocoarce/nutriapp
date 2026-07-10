@@ -512,18 +512,18 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsApiKeySubtitleSet =>
-      'Configurada — el reconocimiento de fotos está activo';
+      'Configurada en este dispositivo — el reconocimiento de fotos está activo para todas las cuentas que inicien sesión aquí';
 
   @override
   String get settingsApiKeySubtitleUnset =>
-      'Sin configurar — el reconocimiento de fotos no funcionará';
+      'Sin configurar en este dispositivo — el reconocimiento de fotos no funcionará';
 
   @override
   String get settingsApiKeyDialogTitle => 'Clave de API de Gemini';
 
   @override
   String get settingsApiKeyDialogDescription =>
-      'NutriApp usa Gemini Vision para identificar alimentos en tus fotos. Obtén una clave gratuita en aistudio.google.com/app/apikey y pégala aquí. Se guarda cifrada únicamente en este dispositivo.';
+      'NutriApp usa Gemini Vision para identificar alimentos en tus fotos. Obtén una clave gratuita en aistudio.google.com/app/apikey y pégala aquí. Se guarda cifrada una sola vez en este dispositivo y la usan automáticamente todas las cuentas que inicien sesión en él — no es necesario repetir este paso por cada cuenta, solo una vez por dispositivo (por ejemplo, una vez en tu teléfono Android y una vez en tu iPhone).';
 
   @override
   String get settingsApiKeyFieldLabel => 'Clave de API';

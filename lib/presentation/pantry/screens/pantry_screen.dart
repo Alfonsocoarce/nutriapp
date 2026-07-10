@@ -158,9 +158,16 @@ class _PantryTile extends ConsumerWidget {
     }
 
     return ListTile(
-      title: Text(item.productName),
-      subtitle: Text('${item.quantity} ${item.unit}'
-          '${days != null ? ' · ${l10n.pantryDaysRemaining}: $days' : ''}'),
+      dense: true,
+      visualDensity: VisualDensity.compact,
+      title: Text(item.productName,
+          maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: Text(
+        '${item.quantity} ${item.unit}'
+        '${days != null ? ' · ${l10n.pantryDaysRemaining}: $days' : ''}',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
       trailing: statusLabel == null
           ? IconButton(
               icon: const Icon(Icons.delete_outline),
