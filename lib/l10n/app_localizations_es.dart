@@ -307,6 +307,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get foodLogLoveMessage => 'Te amo, cuida siempre tu salud';
 
   @override
+  String get foodLogModeMeal => 'Plato de comida';
+
+  @override
+  String get foodLogModeLabel => 'Producto con etiqueta';
+
+  @override
+  String get foodLogLabelTip =>
+      'Consejo: encuadra toda la tabla de Datos Nutricionales, sin reflejos ni partes cortadas, para leer los valores impresos con precisión.';
+
+  @override
   String get pantryTitle => 'Despensa';
 
   @override

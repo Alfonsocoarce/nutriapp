@@ -105,6 +105,9 @@
   "foodLogVisibilityWarningTitle": "Revisa las porciones antes de guardar",
   "foodLogComponentBreakdownTitle": "Desglose por alimento",
   "foodLogLoveMessage": "Te amo, cuida siempre tu salud",
+  "foodLogModeMeal": "Plato de comida",
+  "foodLogModeLabel": "Producto con etiqueta",
+  "foodLogLabelTip": "Consejo: encuadra toda la tabla de Datos Nutricionales, sin reflejos ni partes cortadas, para leer los valores impresos con precisión.",
 
   "pantryTitle": "Despensa",
   "pantryAddItem": "Agregar producto",

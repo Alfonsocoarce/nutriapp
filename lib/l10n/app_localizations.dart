@@ -682,6 +682,24 @@ abstract class AppLocalizations {
   /// **'Te amo, cuida siempre tu salud'**
   String get foodLogLoveMessage;
 
+  /// No description provided for @foodLogModeMeal.
+  ///
+  /// In es, this message translates to:
+  /// **'Plato de comida'**
+  String get foodLogModeMeal;
+
+  /// No description provided for @foodLogModeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Producto con etiqueta'**
+  String get foodLogModeLabel;
+
+  /// No description provided for @foodLogLabelTip.
+  ///
+  /// In es, this message translates to:
+  /// **'Consejo: encuadra toda la tabla de Datos Nutricionales, sin reflejos ni partes cortadas, para leer los valores impresos con precisión.'**
+  String get foodLogLabelTip;
+
   /// No description provided for @pantryTitle.
   ///
   /// In es, this message translates to:

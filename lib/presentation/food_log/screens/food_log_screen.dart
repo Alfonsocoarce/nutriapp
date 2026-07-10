@@ -8,6 +8,8 @@ import '../../shared/widgets/settings_screen.dart';
 import '../providers/food_log_providers.dart';
 import 'food_entry_form_screen.dart';
 
+enum _CaptureMode { meal, label }
+
 class FoodLogScreen extends ConsumerStatefulWidget {
   const FoodLogScreen({super.key});
 
@@ -17,6 +19,7 @@ class FoodLogScreen extends ConsumerStatefulWidget {
 
 class _FoodLogScreenState extends ConsumerState<FoodLogScreen> {
   bool _analyzing = false;
+  _CaptureMode _mode = _CaptureMode.meal;
 
   Future<void> _capture(ImageSource source) async {
     final picker = ImagePicker();
@@ -29,8 +32,10 @@ class _FoodLogScreenState extends ConsumerState<FoodLogScreen> {
     final l10n = AppLocalizations.of(context)!;
     setState(() => _analyzing = true);
     try {
-      final result =
-          await ref.read(foodRecognitionServiceProvider).analyze(photoPath);
+      final service = _mode == _CaptureMode.label
+          ? ref.read(labelRecognitionServiceProvider)
+          : ref.read(foodRecognitionServiceProvider);
+      final result = await service.analyze(photoPath);
       if (!mounted) return;
       await Navigator.of(context).push(MaterialPageRoute(
         builder: (_) =>
@@ -121,6 +126,24 @@ class _FoodLogScreenState extends ConsumerState<FoodLogScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      SegmentedButton<_CaptureMode>(
+                        segments: [
+                          ButtonSegment(
+                            value: _CaptureMode.meal,
+                            label: Text(l10n.foodLogModeMeal),
+                            icon: const Icon(Icons.restaurant),
+                          ),
+                          ButtonSegment(
+                            value: _CaptureMode.label,
+                            label: Text(l10n.foodLogModeLabel),
+                            icon: const Icon(Icons.label_outline),
+                          ),
+                        ],
+                        selected: {_mode},
+                        onSelectionChanged: (selection) =>
+                            setState(() => _mode = selection.first),
+                      ),
+                      const SizedBox(height: 16),
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
@@ -140,7 +163,9 @@ class _FoodLogScreenState extends ConsumerState<FoodLogScreen> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                l10n.foodLogVisibilityTip,
+                                _mode == _CaptureMode.label
+                                    ? l10n.foodLogLabelTip
+                                    : l10n.foodLogVisibilityTip,
                                 style: TextStyle(
                                   color: Theme.of(context)
                                       .colorScheme

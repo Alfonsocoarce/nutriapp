@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/repositories/sqlite_food_log_repository.dart';
 import '../../../data/services/food_recognition_service.dart';
 import '../../../data/services/gemini_food_recognition_service.dart';
+import '../../../data/services/gemini_label_recognition_service.dart';
 import '../../../domain/entities/food_entry.dart';
 import '../../../domain/repositories/food_log_repository.dart';
 import '../../auth/providers/auth_providers.dart';
@@ -17,6 +18,12 @@ final foodLogRepositoryProvider = Provider<FoodLogRepository>((ref) {
 /// swapping in a different vision backend later.
 final foodRecognitionServiceProvider = Provider<FoodRecognitionService>((ref) {
   return GeminiFoodRecognitionService();
+});
+
+/// Reads printed nutrition-facts labels on packaged products, instead of
+/// estimating from a plate of food — see [GeminiLabelRecognitionService].
+final labelRecognitionServiceProvider = Provider<FoodRecognitionService>((ref) {
+  return GeminiLabelRecognitionService();
 });
 
 class TodaysFoodLogController extends StateNotifier<AsyncValue<List<FoodEntry>>> {

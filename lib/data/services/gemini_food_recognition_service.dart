@@ -65,23 +65,80 @@ String mimeTypeForImagePath(String path) {
   return 'image/jpeg';
 }
 
+// An alias Google keeps pointed at its current recommended lightweight
+// flash model, rather than a pinned version like "gemini-2.5-flash" —
+// pinned versions get retired from new API keys with no advance warning
+// (confirmed the hard way: 2.5-flash 404'd for this key despite being
+// listed by ListModels as supporting generateContent). The non-"lite"
+// "gemini-flash-latest" alias also 503'd repeatedly under free-tier
+// demand; the lite variant has more free-tier headroom and is plenty
+// capable for this single-image classification task.
+const _geminiModel = 'gemini-flash-lite-latest';
+const _geminiEndpoint =
+    'https://generativelanguage.googleapis.com/v1beta/models/$_geminiModel:generateContent';
+
+/// Shared low-level caller for Gemini Vision structured-JSON requests. Used
+/// by both meal-photo and nutrition-label recognition — only the prompt and
+/// response schema differ between those use cases.
+Future<Map<String, dynamic>> callGeminiVisionJson({
+  required String photoPath,
+  required String prompt,
+  required Map<String, dynamic> responseSchema,
+}) async {
+  final apiKey = await ApiKeyStore.instance.getGeminiApiKey();
+  if (apiKey == null || apiKey.isEmpty) {
+    throw MissingApiKeyException();
+  }
+
+  final bytes = await File(photoPath).readAsBytes();
+  final base64Image = base64Encode(bytes);
+  final mimeType = mimeTypeForImagePath(photoPath);
+
+  final response = await http
+      .post(
+        Uri.parse(_geminiEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey,
+        },
+        body: jsonEncode({
+          'contents': [
+            {
+              'parts': [
+                {'text': prompt},
+                {
+                  'inline_data': {'mime_type': mimeType, 'data': base64Image}
+                },
+              ],
+            },
+          ],
+          'generationConfig': {
+            'responseMimeType': 'application/json',
+            'responseSchema': responseSchema,
+            // Disable extended "thinking" — this is a straightforward
+            // classification task, not one that benefits from deep
+            // reasoning, and thinking adds significant latency.
+            'thinkingConfig': {'thinkingBudget': 0},
+          },
+        }),
+      )
+      .timeout(const Duration(seconds: 60));
+
+  if (response.statusCode != 200) {
+    throw HttpException(
+        'Gemini API error ${response.statusCode}: ${response.body}');
+  }
+
+  final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+  final text = decoded['candidates'][0]['content']['parts'][0]['text'] as String;
+  return jsonDecode(text) as Map<String, dynamic>;
+}
+
 /// Real (non-mocked) food photo recognition using Google's Gemini Vision
 /// API. The user supplies their own free API key (Configuración → clave de
 /// IA), obtained at https://aistudio.google.com/app/apikey — see
 /// [ApiKeyStore] for the security tradeoff this implies.
 class GeminiFoodRecognitionService implements FoodRecognitionService {
-  // An alias Google keeps pointed at its current recommended lightweight
-  // flash model, rather than a pinned version like "gemini-2.5-flash" —
-  // pinned versions get retired from new API keys with no advance warning
-  // (confirmed the hard way: 2.5-flash 404'd for this key despite being
-  // listed by ListModels as supporting generateContent). The non-"lite"
-  // "gemini-flash-latest" alias also 503'd repeatedly under free-tier
-  // demand; the lite variant has more free-tier headroom and is plenty
-  // capable for this single-image classification task.
-  static const _model = 'gemini-flash-lite-latest';
-  static const _endpoint =
-      'https://generativelanguage.googleapis.com/v1beta/models/$_model:generateContent';
-
   static const _prompt = '''
 Eres un experto en nutrición y en estimación de porciones a partir de
 fotografías. Analiza la fotografía de este plato de comida y responde
@@ -133,55 +190,11 @@ Reglas importantes:
 
   @override
   Future<FoodRecognitionResult> analyze(String photoPath) async {
-    final apiKey = await ApiKeyStore.instance.getGeminiApiKey();
-    if (apiKey == null || apiKey.isEmpty) {
-      throw MissingApiKeyException();
-    }
-
-    final bytes = await File(photoPath).readAsBytes();
-    final base64Image = base64Encode(bytes);
-    final mimeType = mimeTypeForImagePath(photoPath);
-
-    final response = await http
-        .post(
-          Uri.parse(_endpoint),
-          headers: {
-            'Content-Type': 'application/json',
-            'x-goog-api-key': apiKey,
-          },
-          body: jsonEncode({
-            'contents': [
-              {
-                'parts': [
-                  {'text': _prompt},
-                  {
-                    'inline_data': {'mime_type': mimeType, 'data': base64Image}
-                  },
-                ],
-              },
-            ],
-            'generationConfig': {
-              'responseMimeType': 'application/json',
-              'responseSchema': _responseSchema,
-              // Disable extended "thinking" — this is a straightforward
-              // classification task, not one that benefits from deep
-              // reasoning, and thinking adds significant latency.
-              'thinkingConfig': {'thinkingBudget': 0},
-            },
-          }),
-        )
-        .timeout(const Duration(seconds: 60));
-
-    if (response.statusCode != 200) {
-      throw HttpException(
-          'Gemini API error ${response.statusCode}: ${response.body}');
-    }
-
-    final decoded = jsonDecode(utf8.decode(response.bodyBytes));
-    final text = decoded['candidates'][0]['content']['parts'][0]['text']
-        as String;
-    final json = jsonDecode(text) as Map<String, dynamic>;
-
+    final json = await callGeminiVisionJson(
+      photoPath: photoPath,
+      prompt: _prompt,
+      responseSchema: _responseSchema,
+    );
     return foodRecognitionResultFromGeminiJson(json);
   }
 
