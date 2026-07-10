@@ -10,10 +10,12 @@ Implementado y funcional en simulador iOS / emulador Android:
 - Registro e inicio de sesión locales (correo/contraseña, sin conexión) — RF-01 parcial
 - Perfil de usuario y objetivos nutricionales — RF-02, RF-03
 - Captura de foto (cámara/galería) con reconocimiento de alimentos **real** vía **Gemini Vision**
-  (`GeminiFoodRecognitionService`) y registro manual — RF-04, RF-05, RF-06, RF-07, RF-08.
-  **Requiere que cada usuario configure su propia clave de API gratuita en Configuración** (ver
-  abajo) — sin clave, la app muestra un mensaje claro con acceso directo a Configuración en vez de
-  fallar en silencio.
+  (`GeminiFoodRecognitionService`, modelo `gemini-flash-lite-latest`) y registro manual — RF-04,
+  RF-05, RF-06, RF-07, RF-08. Verificado end-to-end con una foto real: identifica correctamente el
+  alimento, ingredientes y valores nutricionales. **Requiere que cada usuario configure su propia
+  clave de API gratuita en Configuración** (ver abajo) — sin clave, la app muestra un mensaje claro
+  con acceso directo a Configuración en vez de fallar en silencio; si la API responde con error
+  temporal (503, alta demanda), el diálogo de error incluye un botón "Reintentar" funcional.
 - Despensa con categorías, cantidades y vencimientos, agregada manualmente o vía **factura en PDF**
   con extracción **real** de texto (`CsuInvoiceParsingService`, formato "Tiquete Electrónico" de
   Supermercados Unidos/CSU/Automercado) y pantalla de revisión antes de guardar — RF-09, RF-10, RF-11

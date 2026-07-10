@@ -73,7 +73,12 @@ cantidad estimada, número de porciones y **nivel de confianza** de la identific
 > (JSON Schema) para obtener nombre del alimento, ingredientes, método de cocción, peso estimado,
 > porciones, nivel de confianza y los valores nutricionales de RF-06 en una sola llamada. Los campos
 > que el modelo no pueda determinar se devuelven como `null`, respetando el principio de integridad
-> de datos.
+> de datos. El modelo usado es el alias `gemini-flash-lite-latest` (no una versión fija como
+> `gemini-2.5-flash`): los alias "latest" siguen apuntando al modelo vigente cuando Google retira
+> versiones antiguas del nivel gratuito, y la variante "lite" demostró tener más margen de cuota
+> gratuita que el alias `gemini-flash-latest` completo durante las pruebas. Verificado con una foto
+> real de un plato de comida: identificó correctamente el alimento y sus componentes con nivel de
+> confianza alto.
 >
 > **Nota de seguridad:** para una app publicada en tiendas con múltiples usuarios, la recomendación
 > de Sección 3 (proxy backend sin estado) sigue siendo la correcta — evita exponer cualquier clave

@@ -19,37 +19,49 @@ class _FoodLogScreenState extends ConsumerState<FoodLogScreen> {
   bool _analyzing = false;
 
   Future<void> _capture(ImageSource source) async {
-    final l10n = AppLocalizations.of(context)!;
     final picker = ImagePicker();
     final photo = await picker.pickImage(source: source, imageQuality: 85);
     if (photo == null) return;
+    await _analyze(photo.path);
+  }
 
+  Future<void> _analyze(String photoPath) async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _analyzing = true);
     try {
       final result =
-          await ref.read(foodRecognitionServiceProvider).analyze(photo.path);
+          await ref.read(foodRecognitionServiceProvider).analyze(photoPath);
       if (!mounted) return;
       await Navigator.of(context).push(MaterialPageRoute(
         builder: (_) =>
-            FoodEntryFormScreen(initialResult: result, photoPath: photo.path),
+            FoodEntryFormScreen(initialResult: result, photoPath: photoPath),
       ));
     } on MissingApiKeyException {
       if (mounted) await _showMissingApiKeyDialog(l10n);
-    } catch (_) {
+    } catch (error, stackTrace) {
+      debugPrint('Food recognition failed: $error\n$stackTrace');
       if (mounted) {
-        await showDialog<void>(
+        final shouldRetry = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text(l10n.foodLogAnalysisFailedTitle),
             content: Text(l10n.foodLogAnalysisFailedMessage),
             actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(l10n.settingsCancel),
+              ),
               FilledButton(
-                onPressed: () => Navigator.of(ctx).pop(),
+                onPressed: () => Navigator.of(ctx).pop(true),
                 child: Text(l10n.commonRetry),
               ),
             ],
           ),
         );
+        if (shouldRetry == true) {
+          if (mounted) setState(() => _analyzing = false);
+          return _analyze(photoPath);
+        }
       }
     } finally {
       if (mounted) setState(() => _analyzing = false);

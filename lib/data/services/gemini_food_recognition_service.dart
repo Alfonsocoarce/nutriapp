@@ -60,7 +60,15 @@ String mimeTypeForImagePath(String path) {
 /// IA), obtained at https://aistudio.google.com/app/apikey — see
 /// [ApiKeyStore] for the security tradeoff this implies.
 class GeminiFoodRecognitionService implements FoodRecognitionService {
-  static const _model = 'gemini-2.5-flash';
+  // An alias Google keeps pointed at its current recommended lightweight
+  // flash model, rather than a pinned version like "gemini-2.5-flash" —
+  // pinned versions get retired from new API keys with no advance warning
+  // (confirmed the hard way: 2.5-flash 404'd for this key despite being
+  // listed by ListModels as supporting generateContent). The non-"lite"
+  // "gemini-flash-latest" alias also 503'd repeatedly under free-tier
+  // demand; the lite variant has more free-tier headroom and is plenty
+  // capable for this single-image classification task.
+  static const _model = 'gemini-flash-lite-latest';
   static const _endpoint =
       'https://generativelanguage.googleapis.com/v1beta/models/$_model:generateContent';
 
@@ -112,10 +120,14 @@ Reglas importantes:
             'generationConfig': {
               'responseMimeType': 'application/json',
               'responseSchema': _responseSchema,
+              // Disable extended "thinking" — this is a straightforward
+              // classification task, not one that benefits from deep
+              // reasoning, and thinking adds significant latency.
+              'thinkingConfig': {'thinkingBudget': 0},
             },
           }),
         )
-        .timeout(const Duration(seconds: 30));
+        .timeout(const Duration(seconds: 60));
 
     if (response.statusCode != 200) {
       throw HttpException(
