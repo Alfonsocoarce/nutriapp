@@ -658,6 +658,30 @@ abstract class AppLocalizations {
   /// **'Minerales principales'**
   String get foodLogMinerals;
 
+  /// No description provided for @foodLogVisibilityTip.
+  ///
+  /// In es, this message translates to:
+  /// **'Consejo: toma la foto desde arriba y asegúrate de que todos los alimentos del plato sean visibles (evita que unos tapen a otros) para un cálculo más preciso de las porciones.'**
+  String get foodLogVisibilityTip;
+
+  /// No description provided for @foodLogVisibilityWarningTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Revisa las porciones antes de guardar'**
+  String get foodLogVisibilityWarningTitle;
+
+  /// No description provided for @foodLogComponentBreakdownTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Desglose por alimento'**
+  String get foodLogComponentBreakdownTitle;
+
+  /// No description provided for @foodLogLoveMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Te amo, cuida siempre tu salud'**
+  String get foodLogLoveMessage;
+
   /// No description provided for @pantryTitle.
   ///
   /// In es, this message translates to:

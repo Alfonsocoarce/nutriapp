@@ -62,6 +62,75 @@ void main() {
 
       expect(result.foodName, isNotEmpty);
     });
+
+    test('carries a visibilityWarning when the model flags possibly hidden food',
+        () {
+      final result = foodRecognitionResultFromGeminiJson({
+        'foodName': 'Huevos fritos con arroz y frijoles',
+        'ingredients': ['Huevos', 'Arroz', 'Frijoles'],
+        'confidence': 'medium',
+        'visibilityWarning':
+            'El arroz y los frijoles podrían estar parcialmente cubiertos por los huevos.',
+      });
+
+      expect(result.visibilityWarning, isNotNull);
+      expect(result.visibilityWarning, contains('frijoles'));
+    });
+
+    test('treats a missing or empty visibilityWarning as null', () {
+      final withoutField = foodRecognitionResultFromGeminiJson({
+        'foodName': 'Comida',
+        'ingredients': <String>[],
+        'confidence': 'high',
+      });
+      final withEmptyString = foodRecognitionResultFromGeminiJson({
+        'foodName': 'Comida',
+        'ingredients': <String>[],
+        'confidence': 'high',
+        'visibilityWarning': '',
+      });
+
+      expect(withoutField.visibilityWarning, isNull);
+      expect(withEmptyString.visibilityWarning, isNull);
+    });
+
+    test('parses a per-ingredient component breakdown', () {
+      final result = foodRecognitionResultFromGeminiJson({
+        'foodName': 'Huevos fritos con arroz y frijoles',
+        'ingredients': ['Huevos', 'Arroz', 'Frijoles'],
+        'confidence': 'medium',
+        'components': [
+          {
+            'name': 'Huevo frito',
+            'estimatedWeightGrams': 100,
+            'calories': 180,
+            'proteinGrams': 12,
+            'carbsGrams': 1,
+            'fatGrams': 14,
+          },
+          {
+            'name': 'Arroz',
+            'estimatedWeightGrams': 120,
+            'calories': 155,
+          },
+        ],
+      });
+
+      expect(result.components, hasLength(2));
+      expect(result.components.first.name, 'Huevo frito');
+      expect(result.components.first.calories, 180);
+      expect(result.components.last.proteinGrams, isNull);
+    });
+
+    test('defaults components to an empty list when absent', () {
+      final result = foodRecognitionResultFromGeminiJson({
+        'foodName': 'Comida',
+        'ingredients': <String>[],
+        'confidence': 'high',
+      });
+
+      expect(result.components, isEmpty);
+    });
   });
 
   group('mimeTypeForImagePath', () {

@@ -101,6 +101,10 @@
   "foodLogCholesterol": "Colesterol",
   "foodLogVitamins": "Vitaminas principales",
   "foodLogMinerals": "Minerales principales",
+  "foodLogVisibilityTip": "Consejo: toma la foto desde arriba y asegúrate de que todos los alimentos del plato sean visibles (evita que unos tapen a otros) para un cálculo más preciso de las porciones.",
+  "foodLogVisibilityWarningTitle": "Revisa las porciones antes de guardar",
+  "foodLogComponentBreakdownTitle": "Desglose por alimento",
+  "foodLogLoveMessage": "Te amo, cuida siempre tu salud",
 
   "pantryTitle": "Despensa",
   "pantryAddItem": "Agregar producto",

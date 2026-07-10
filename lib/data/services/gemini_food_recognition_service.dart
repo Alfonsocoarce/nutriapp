@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../../core/security/api_key_store.dart';
 import '../../domain/entities/confidence_level.dart';
+import '../../domain/entities/food_component_breakdown.dart';
 import '../../domain/entities/food_recognition_result.dart';
 import '../../domain/entities/nutrition_info.dart';
 import 'food_recognition_service.dart';
@@ -31,6 +32,15 @@ FoodRecognitionResult foodRecognitionResultFromGeminiJson(
     cookingMethod: json['cookingMethod'] as String?,
     estimatedWeightGrams: (json['estimatedWeightGrams'] as num?)?.toDouble(),
     servings: (json['servings'] as num?)?.toInt(),
+    visibilityWarning: (json['visibilityWarning'] as String?)?.trim().isEmpty ==
+            true
+        ? null
+        : json['visibilityWarning'] as String?,
+    components: (json['components'] as List?)
+            ?.cast<Map<String, dynamic>>()
+            .map(FoodComponentBreakdown.fromJson)
+            .toList() ??
+        const [],
     nutrition: NutritionInfo(
       calories: (json['calories'] as num?)?.toDouble(),
       proteinGrams: (json['proteinGrams'] as num?)?.toDouble(),
@@ -73,19 +83,52 @@ class GeminiFoodRecognitionService implements FoodRecognitionService {
       'https://generativelanguage.googleapis.com/v1beta/models/$_model:generateContent';
 
   static const _prompt = '''
-Eres un experto en nutrición. Analiza la fotografía de este plato de comida
-y responde ÚNICAMENTE con un objeto JSON (sin texto adicional) que describa
-el alimento y su información nutricional aproximada para la porción visible
-en la foto.
+Eres un experto en nutrición y en estimación de porciones a partir de
+fotografías. Analiza la fotografía de este plato de comida y responde
+ÚNICAMENTE con un objeto JSON (sin texto adicional) que describa el
+alimento, sus porciones y su información nutricional aproximada para la
+porción visible en la foto.
+
+Estimación de porciones:
+- Identifica cada componente visible del plato por separado (proteína,
+  carbohidrato, vegetales, salsas, etc.) antes de estimar el peso total, y
+  usa referencias de escala en la foto (tamaño del plato, cubiertos, taza)
+  para calibrar el tamaño de cada porción con la mayor precisión posible.
+- Presta atención a alimentos que suelen quedar parcial o totalmente
+  cubiertos por otros en el mismo plato (por ejemplo: arroz y frijoles o
+  "gallo pinto" debajo de huevos fritos, salsas debajo de una proteína,
+  guarniciones debajo de una pieza principal). Si ves bordes, texturas o
+  colores que sugieren que hay comida debajo o detrás de otro alimento,
+  inclúyela con tu mejor estimación, aunque no sea completamente visible.
+- Si sospechas que una parte relevante del plato podría no ser visible en
+  la foto (por ejemplo, algo parece estar debajo de otro alimento, o el
+  plato está cortado por el borde de la imagen), describe brevemente en
+  "visibilityWarning" qué podría faltar por ver, en español, para que la
+  persona pueda confirmarlo o tomar otra foto. Si el plato completo es
+  claramente visible, usa null en ese campo.
+
+Desglose por componente (obligatorio):
+- Además de los totales del plato, llena "components": un arreglo con un
+  objeto POR CADA alimento distinguible del plato (ej. "Huevo frito",
+  "Arroz", "Frijoles", "Plátano maduro", "Aguacate", "Pan"), cada uno con su
+  propio peso estimado en gramos y su propia información nutricional.
+- La suma de "calories"/"proteinGrams"/"carbsGrams"/"fatGrams" de todos los
+  elementos de "components" debe ser consistente con los totales generales
+  del plato (calories, proteinGrams, carbsGrams, fatGrams a nivel raíz).
+- No agrupes varios alimentos distintos en un solo componente (por ejemplo,
+  "huevos y arroz" no es válido; deben ir como dos componentes separados).
 
 Reglas importantes:
 - Si no puedes determinar un valor con confianza razonable, usa null en ese
   campo en lugar de adivinar. Es preferible un dato faltante a uno incorrecto.
-- "confidence" refleja tu nivel general de certeza sobre la identificación:
-  "high", "medium" o "low".
+- "confidence" refleja tu nivel general de certeza sobre la identificación Y
+  la estimación de porciones: usa "low" o "medium" (no "high") cuando haya
+  alimentos parcial u ocultos, o cuando la escala del plato sea difícil de
+  determinar.
 - Los valores nutricionales son para el peso/porción estimado visible en la
-  foto completa, no por cada 100 g.
-- Responde en español para foodName, ingredients y cookingMethod.
+  foto completa (sumando todos los componentes del plato), no por cada 100 g.
+- Responde en español para foodName, ingredients, cookingMethod,
+  visibilityWarning y el "name" de cada componente.
 ''';
 
   @override
@@ -153,6 +196,22 @@ Reglas importantes:
       'cookingMethod': {'type': 'STRING', 'nullable': true},
       'estimatedWeightGrams': {'type': 'NUMBER', 'nullable': true},
       'servings': {'type': 'INTEGER', 'nullable': true},
+      'visibilityWarning': {'type': 'STRING', 'nullable': true},
+      'components': {
+        'type': 'ARRAY',
+        'items': {
+          'type': 'OBJECT',
+          'properties': {
+            'name': {'type': 'STRING'},
+            'estimatedWeightGrams': {'type': 'NUMBER', 'nullable': true},
+            'calories': {'type': 'NUMBER', 'nullable': true},
+            'proteinGrams': {'type': 'NUMBER', 'nullable': true},
+            'carbsGrams': {'type': 'NUMBER', 'nullable': true},
+            'fatGrams': {'type': 'NUMBER', 'nullable': true},
+          },
+          'required': ['name'],
+        },
+      },
       'confidence': {
         'type': 'STRING',
         'enum': ['high', 'medium', 'low'],

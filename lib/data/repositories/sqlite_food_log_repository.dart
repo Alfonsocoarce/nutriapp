@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../domain/entities/confidence_level.dart';
+import '../../domain/entities/food_component_breakdown.dart';
 import '../../domain/entities/food_entry.dart';
 import '../../domain/entities/meal_type.dart';
 import '../../domain/entities/nutrition_info.dart';
@@ -35,6 +36,9 @@ class SqliteFoodLogRepository implements FoodLogRepository {
       'estimated_weight_g': entry.estimatedWeightGrams,
       'servings': entry.servings,
       'cooking_method': entry.cookingMethod,
+      'food_components_json': entry.components.isEmpty
+          ? null
+          : jsonEncode(entry.components.map((c) => c.toJson()).toList()),
     });
   }
 
@@ -105,6 +109,12 @@ class SqliteFoodLogRepository implements FoodLogRepository {
       estimatedWeightGrams: row['estimated_weight_g'] as double?,
       servings: row['servings'] as int?,
       cookingMethod: row['cooking_method'] as String?,
+      components: row['food_components_json'] == null
+          ? const []
+          : (jsonDecode(row['food_components_json'] as String) as List)
+              .cast<Map<String, dynamic>>()
+              .map(FoodComponentBreakdown.fromJson)
+              .toList(),
     );
   }
 }

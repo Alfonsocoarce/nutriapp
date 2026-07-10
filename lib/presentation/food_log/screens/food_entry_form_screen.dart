@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/localization/enum_labels.dart';
 import '../../../domain/entities/confidence_level.dart';
+import '../../../domain/entities/food_component_breakdown.dart';
 import '../../../domain/entities/food_entry.dart';
 import '../../../domain/entities/food_recognition_result.dart';
 import '../../../domain/entities/meal_type.dart';
 import '../../../domain/entities/nutrition_info.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/providers/auth_providers.dart';
+import '../../shared/widgets/love_message_banner.dart';
 import '../providers/food_log_providers.dart';
 
 /// Confirms/edits a food entry before saving. Used both after AI photo
@@ -84,6 +86,54 @@ class _FoodEntryFormScreenState extends ConsumerState<FoodEntryFormScreen> {
                   ),
                   const SizedBox(height: 12),
                 ],
+                if (widget.initialResult?.visibilityWarning != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.errorContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.warning_amber_rounded,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onErrorContainer,
+                            size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.foodLogVisibilityWarningTitle,
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onErrorContainer,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.initialResult!.visibilityWarning!,
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onErrorContainer,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
                 TextFormField(
                   controller: _nameController,
                   decoration: InputDecoration(labelText: l10n.foodLogFoodName),
@@ -125,6 +175,13 @@ class _FoodEntryFormScreenState extends ConsumerState<FoodEntryFormScreen> {
                   suffix: l10n.commonGrams,
                   notAvailableLabel: l10n.foodLogNotAvailable,
                 ),
+                if ((widget.initialResult?.components ?? const []).isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  _ComponentBreakdownList(
+                    title: l10n.foodLogComponentBreakdownTitle,
+                    components: widget.initialResult!.components,
+                  ),
+                ],
                 const SizedBox(height: 24),
                 FilledButton(
                   onPressed: _saving ? null : _save,
@@ -135,6 +192,8 @@ class _FoodEntryFormScreenState extends ConsumerState<FoodEntryFormScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2))
                       : Text(l10n.foodLogSaveEntry),
                 ),
+                const SizedBox(height: 16),
+                const LoveMessageBanner(),
               ],
             ),
           ),
@@ -173,6 +232,7 @@ class _FoodEntryFormScreenState extends ConsumerState<FoodEntryFormScreen> {
       estimatedWeightGrams: widget.initialResult?.estimatedWeightGrams,
       servings: widget.initialResult?.servings,
       cookingMethod: widget.initialResult?.cookingMethod,
+      components: widget.initialResult?.components ?? const [],
     );
 
     await ref.read(todaysFoodLogProvider.notifier).addEntry(entry);
@@ -183,6 +243,62 @@ class _FoodEntryFormScreenState extends ConsumerState<FoodEntryFormScreen> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.foodLogEntrySaved)));
     }
+  }
+}
+
+class _ComponentBreakdownList extends StatelessWidget {
+  const _ComponentBreakdownList({required this.title, required this.components});
+
+  final String title;
+  final List<FoodComponentBreakdown> components;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(title,
+              style: theme.textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          for (final c in components) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: Text(c.name.isEmpty ? '—' : c.name,
+                      style: theme.textTheme.bodyMedium),
+                ),
+                if (c.calories != null)
+                  Text('${c.calories!.toStringAsFixed(0)} kcal',
+                      style: theme.textTheme.bodyMedium
+                          ?.copyWith(fontWeight: FontWeight.w600)),
+              ],
+            ),
+            Text(
+              [
+                if (c.estimatedWeightGrams != null)
+                  '~${c.estimatedWeightGrams!.toStringAsFixed(0)} g',
+                if (c.proteinGrams != null)
+                  'P ${c.proteinGrams!.toStringAsFixed(0)} g',
+                if (c.carbsGrams != null)
+                  'C ${c.carbsGrams!.toStringAsFixed(0)} g',
+                if (c.fatGrams != null) 'G ${c.fatGrams!.toStringAsFixed(0)} g',
+              ].join(' · '),
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+            if (c != components.last) const Divider(height: 16),
+          ],
+        ],
+      ),
+    );
   }
 }
 

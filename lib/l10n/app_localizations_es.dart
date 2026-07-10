@@ -293,6 +293,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get foodLogMinerals => 'Minerales principales';
 
   @override
+  String get foodLogVisibilityTip =>
+      'Consejo: toma la foto desde arriba y asegúrate de que todos los alimentos del plato sean visibles (evita que unos tapen a otros) para un cálculo más preciso de las porciones.';
+
+  @override
+  String get foodLogVisibilityWarningTitle =>
+      'Revisa las porciones antes de guardar';
+
+  @override
+  String get foodLogComponentBreakdownTitle => 'Desglose por alimento';
+
+  @override
+  String get foodLogLoveMessage => 'Te amo, cuida siempre tu salud';
+
+  @override
   String get pantryTitle => 'Despensa';
 
   @override

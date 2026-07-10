@@ -45,7 +45,13 @@ class AppDatabase {
     return openDatabase(
       dbPath,
       password: password,
-      version: 1,
+      version: 2,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute(
+              'ALTER TABLE food_entries ADD COLUMN food_components_json TEXT');
+        }
+      },
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE app_users (
@@ -99,6 +105,7 @@ class AppDatabase {
             estimated_weight_g REAL,
             servings INTEGER,
             cooking_method TEXT,
+            food_components_json TEXT,
             FOREIGN KEY(user_id) REFERENCES app_users(id)
           )
         ''');
