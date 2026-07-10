@@ -7,6 +7,7 @@ import '../../food_log/screens/food_log_screen.dart';
 import '../../pantry/screens/pantry_screen.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../../profile/screens/profile_setup_screen.dart';
+import '../../reports/screens/weekly_report_screen.dart';
 import 'settings_screen.dart';
 
 /// Root screen once logged in. Forces profile setup first (RF-02) before
@@ -38,6 +39,7 @@ class _MainShellState extends ConsumerState<MainShell> {
           const DashboardScreen(),
           const FoodLogScreen(),
           const PantryScreen(),
+          const WeeklyReportScreen(),
           const SettingsScreen(),
         ];
 
@@ -61,6 +63,11 @@ class _MainShellState extends ConsumerState<MainShell> {
                 icon: const Icon(Icons.kitchen_outlined),
                 selectedIcon: const Icon(Icons.kitchen),
                 label: l10n.pantryTitle,
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.summarize_outlined),
+                selectedIcon: const Icon(Icons.summarize),
+                label: l10n.reportsTitle,
               ),
               NavigationDestination(
                 icon: const Icon(Icons.settings_outlined),

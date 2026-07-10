@@ -43,23 +43,31 @@ class DashboardScreen extends ConsumerWidget {
                       l10n: l10n,
                     ),
                     const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: _MacroCard(
-                                label: l10n.dashboardProtein,
-                                grams: progress.proteinGrams)),
-                        const SizedBox(width: 8),
-                        Expanded(
-                            child: _MacroCard(
-                                label: l10n.dashboardCarbs,
-                                grams: progress.carbsGrams)),
-                        const SizedBox(width: 8),
-                        Expanded(
-                            child: _MacroCard(
-                                label: l10n.dashboardFat, grams: progress.fatGrams)),
-                      ],
-                    ),
+                    if (progress.proteinGrams + progress.carbsGrams + progress.fatGrams > 0)
+                      _MacroDistributionChart(
+                        proteinGrams: progress.proteinGrams,
+                        carbsGrams: progress.carbsGrams,
+                        fatGrams: progress.fatGrams,
+                        l10n: l10n,
+                      )
+                    else
+                      Row(
+                        children: [
+                          Expanded(
+                              child: _MacroCard(
+                                  label: l10n.dashboardProtein,
+                                  grams: progress.proteinGrams)),
+                          const SizedBox(width: 8),
+                          Expanded(
+                              child: _MacroCard(
+                                  label: l10n.dashboardCarbs,
+                                  grams: progress.carbsGrams)),
+                          const SizedBox(width: 8),
+                          Expanded(
+                              child: _MacroCard(
+                                  label: l10n.dashboardFat, grams: progress.fatGrams)),
+                        ],
+                      ),
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -152,6 +160,92 @@ class _CalorieRing extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _MacroDistributionChart extends StatelessWidget {
+  const _MacroDistributionChart({
+    required this.proteinGrams,
+    required this.carbsGrams,
+    required this.fatGrams,
+    required this.l10n,
+  });
+
+  final double proteinGrams;
+  final double carbsGrams;
+  final double fatGrams;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final proteinKcal = proteinGrams * 4;
+    final carbsKcal = carbsGrams * 4;
+    final fatKcal = fatGrams * 9;
+    final total = proteinKcal + carbsKcal + fatKcal;
+
+    final colors = [
+      theme.colorScheme.primary,
+      theme.colorScheme.tertiary,
+      theme.colorScheme.secondary,
+    ];
+    final entries = [
+      (l10n.dashboardProtein, proteinGrams, proteinKcal, colors[0]),
+      (l10n.dashboardCarbs, carbsGrams, carbsKcal, colors[1]),
+      (l10n.dashboardFat, fatGrams, fatKcal, colors[2]),
+    ];
+
+    return Row(
+      children: [
+        SizedBox(
+          height: 110,
+          width: 110,
+          child: PieChart(
+            PieChartData(
+              sectionsSpace: 2,
+              centerSpaceRadius: 28,
+              sections: [
+                for (final e in entries)
+                  PieChartSectionData(
+                    value: total <= 0 ? 1 : e.$3,
+                    color: e.$4,
+                    showTitle: false,
+                    radius: 18,
+                  ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final e in entries)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 10,
+                        height: 10,
+                        decoration:
+                            BoxDecoration(color: e.$4, shape: BoxShape.circle),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(e.$1, style: theme.textTheme.bodySmall),
+                      const Spacer(),
+                      Text('${e.$2.round()} g',
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

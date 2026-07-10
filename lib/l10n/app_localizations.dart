@@ -700,6 +700,102 @@ abstract class AppLocalizations {
   /// **'Consejo: encuadra toda la tabla de Datos Nutricionales, sin reflejos ni partes cortadas, para leer los valores impresos con precisión.'**
   String get foodLogLabelTip;
 
+  /// No description provided for @reportsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Resumen semanal'**
+  String get reportsTitle;
+
+  /// No description provided for @reportsGeneratePdf.
+  ///
+  /// In es, this message translates to:
+  /// **'Generar PDF'**
+  String get reportsGeneratePdf;
+
+  /// No description provided for @reportsGenerating.
+  ///
+  /// In es, this message translates to:
+  /// **'Generando PDF...'**
+  String get reportsGenerating;
+
+  /// No description provided for @reportsGeneratedSnackbar.
+  ///
+  /// In es, this message translates to:
+  /// **'PDF generado y listo para compartir'**
+  String get reportsGeneratedSnackbar;
+
+  /// No description provided for @reportsGenerationFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo generar el PDF. Intenta de nuevo.'**
+  String get reportsGenerationFailed;
+
+  /// No description provided for @reportsNoProfile.
+  ///
+  /// In es, this message translates to:
+  /// **'Completa tu perfil para generar resúmenes semanales.'**
+  String get reportsNoProfile;
+
+  /// No description provided for @reportsAverages.
+  ///
+  /// In es, this message translates to:
+  /// **'Promedios de la semana'**
+  String get reportsAverages;
+
+  /// No description provided for @reportsDaysLogged.
+  ///
+  /// In es, this message translates to:
+  /// **'Días con registros'**
+  String get reportsDaysLogged;
+
+  /// No description provided for @reportsGoal.
+  ///
+  /// In es, this message translates to:
+  /// **'Meta'**
+  String get reportsGoal;
+
+  /// No description provided for @reportsConsumed.
+  ///
+  /// In es, this message translates to:
+  /// **'Consumido'**
+  String get reportsConsumed;
+
+  /// No description provided for @reportsPreviousReports.
+  ///
+  /// In es, this message translates to:
+  /// **'Reportes generados'**
+  String get reportsPreviousReports;
+
+  /// No description provided for @reportsNoPreviousReports.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no has generado ningún reporte.'**
+  String get reportsNoPreviousReports;
+
+  /// No description provided for @reportsShare.
+  ///
+  /// In es, this message translates to:
+  /// **'Compartir'**
+  String get reportsShare;
+
+  /// No description provided for @reportsCaloriesChartTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Calorías por día'**
+  String get reportsCaloriesChartTitle;
+
+  /// No description provided for @reportsTopFoods.
+  ///
+  /// In es, this message translates to:
+  /// **'Alimentos más consumidos'**
+  String get reportsTopFoods;
+
+  /// No description provided for @reportsNoEntriesThisDay.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin registros'**
+  String get reportsNoEntriesThisDay;
+
   /// No description provided for @pantryTitle.
   ///
   /// In es, this message translates to:

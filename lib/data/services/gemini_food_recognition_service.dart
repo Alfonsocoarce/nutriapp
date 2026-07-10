@@ -77,22 +77,31 @@ const _geminiModel = 'gemini-flash-lite-latest';
 const _geminiEndpoint =
     'https://generativelanguage.googleapis.com/v1beta/models/$_geminiModel:generateContent';
 
-/// Shared low-level caller for Gemini Vision structured-JSON requests. Used
-/// by both meal-photo and nutrition-label recognition — only the prompt and
-/// response schema differ between those use cases.
-Future<Map<String, dynamic>> callGeminiVisionJson({
-  required String photoPath,
+/// Shared low-level caller for Gemini structured-JSON requests (with or
+/// without an image part). Returns the decoded JSON payload — a Map for
+/// object schemas, a List for array schemas.
+Future<dynamic> _callGeminiJson({
   required String prompt,
   required Map<String, dynamic> responseSchema,
+  String? photoPath,
 }) async {
   final apiKey = await ApiKeyStore.instance.getGeminiApiKey();
   if (apiKey == null || apiKey.isEmpty) {
     throw MissingApiKeyException();
   }
 
-  final bytes = await File(photoPath).readAsBytes();
-  final base64Image = base64Encode(bytes);
-  final mimeType = mimeTypeForImagePath(photoPath);
+  final parts = <Map<String, dynamic>>[
+    {'text': prompt}
+  ];
+  if (photoPath != null) {
+    final bytes = await File(photoPath).readAsBytes();
+    parts.add({
+      'inline_data': {
+        'mime_type': mimeTypeForImagePath(photoPath),
+        'data': base64Encode(bytes),
+      },
+    });
+  }
 
   final response = await http
       .post(
@@ -103,21 +112,14 @@ Future<Map<String, dynamic>> callGeminiVisionJson({
         },
         body: jsonEncode({
           'contents': [
-            {
-              'parts': [
-                {'text': prompt},
-                {
-                  'inline_data': {'mime_type': mimeType, 'data': base64Image}
-                },
-              ],
-            },
+            {'parts': parts},
           ],
           'generationConfig': {
             'responseMimeType': 'application/json',
             'responseSchema': responseSchema,
-            // Disable extended "thinking" — this is a straightforward
-            // classification task, not one that benefits from deep
-            // reasoning, and thinking adds significant latency.
+            // Disable extended "thinking" — these are straightforward
+            // classification/generation tasks, not ones that benefit from
+            // deep reasoning, and thinking adds significant latency.
             'thinkingConfig': {'thinkingBudget': 0},
           },
         }),
@@ -131,7 +133,32 @@ Future<Map<String, dynamic>> callGeminiVisionJson({
 
   final decoded = jsonDecode(utf8.decode(response.bodyBytes));
   final text = decoded['candidates'][0]['content']['parts'][0]['text'] as String;
-  return jsonDecode(text) as Map<String, dynamic>;
+  return jsonDecode(text);
+}
+
+/// Shared low-level caller for Gemini Vision structured-JSON requests. Used
+/// by both meal-photo and nutrition-label recognition — only the prompt and
+/// response schema differ between those use cases.
+Future<Map<String, dynamic>> callGeminiVisionJson({
+  required String photoPath,
+  required String prompt,
+  required Map<String, dynamic> responseSchema,
+}) async {
+  final json = await _callGeminiJson(
+    prompt: prompt,
+    responseSchema: responseSchema,
+    photoPath: photoPath,
+  );
+  return json as Map<String, dynamic>;
+}
+
+/// Shared low-level caller for text-only Gemini structured-JSON requests
+/// (no image) — used for text-generation use cases like AI recommendations.
+Future<dynamic> callGeminiTextJson({
+  required String prompt,
+  required Map<String, dynamic> responseSchema,
+}) {
+  return _callGeminiJson(prompt: prompt, responseSchema: responseSchema);
 }
 
 /// Real (non-mocked) food photo recognition using Google's Gemini Vision

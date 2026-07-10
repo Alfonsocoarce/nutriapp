@@ -317,6 +317,56 @@ class AppLocalizationsEs extends AppLocalizations {
       'Consejo: encuadra toda la tabla de Datos Nutricionales, sin reflejos ni partes cortadas, para leer los valores impresos con precisión.';
 
   @override
+  String get reportsTitle => 'Resumen semanal';
+
+  @override
+  String get reportsGeneratePdf => 'Generar PDF';
+
+  @override
+  String get reportsGenerating => 'Generando PDF...';
+
+  @override
+  String get reportsGeneratedSnackbar => 'PDF generado y listo para compartir';
+
+  @override
+  String get reportsGenerationFailed =>
+      'No se pudo generar el PDF. Intenta de nuevo.';
+
+  @override
+  String get reportsNoProfile =>
+      'Completa tu perfil para generar resúmenes semanales.';
+
+  @override
+  String get reportsAverages => 'Promedios de la semana';
+
+  @override
+  String get reportsDaysLogged => 'Días con registros';
+
+  @override
+  String get reportsGoal => 'Meta';
+
+  @override
+  String get reportsConsumed => 'Consumido';
+
+  @override
+  String get reportsPreviousReports => 'Reportes generados';
+
+  @override
+  String get reportsNoPreviousReports => 'Aún no has generado ningún reporte.';
+
+  @override
+  String get reportsShare => 'Compartir';
+
+  @override
+  String get reportsCaloriesChartTitle => 'Calorías por día';
+
+  @override
+  String get reportsTopFoods => 'Alimentos más consumidos';
+
+  @override
+  String get reportsNoEntriesThisDay => 'Sin registros';
+
+  @override
   String get pantryTitle => 'Despensa';
 
   @override
