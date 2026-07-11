@@ -14,77 +14,88 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final apiKeyAsync = ref.watch(apiKeyControllerProvider);
     final hasApiKey = apiKeyAsync.valueOrNull?.isNotEmpty ?? false;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: SafeArea(
-        child: ListTileTheme(
-          data: const ListTileThemeData(
-            dense: true,
-            visualDensity: VisualDensity.compact,
-          ),
-          child: ListView(
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           children: [
-            ListTile(
-              leading: const Icon(Icons.person_outline),
-              title: Text(l10n.settingsEditProfile),
+            _SettingsTile(
+              icon: Icons.person_outline,
+              title: l10n.settingsEditProfile,
+              description: l10n.settingsEditProfileDesc,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const ProfileSetupScreen()),
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.language),
-              title: Text(l10n.settingsLanguage),
-              subtitle: const Text('Español'),
+            const Divider(height: 1),
+            _SettingsTile(
+              icon: Icons.language,
+              title: l10n.settingsLanguage,
+              description: l10n.settingsLanguageDesc,
             ),
-            ListTile(
-              leading: const Icon(Icons.notifications_outlined),
-              title: Text(l10n.settingsNotifications),
+            const Divider(height: 1),
+            _SettingsTile(
+              icon: Icons.notifications_outlined,
+              title: l10n.settingsNotifications,
+              description: l10n.settingsNotificationsDesc,
             ),
-            ListTile(
-              leading: const Icon(Icons.help_outline),
-              title: Text(l10n.settingsReplayTutorial),
+            const Divider(height: 1),
+            _SettingsTile(
+              icon: Icons.help_outline,
+              title: l10n.settingsReplayTutorial,
+              description: l10n.settingsReplayTutorialDesc,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const OnboardingScreen()),
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.ios_share),
-              title: Text(l10n.settingsExportData),
+            const Divider(height: 1),
+            _SettingsTile(
+              icon: Icons.ios_share,
+              title: l10n.settingsExportData,
+              description: l10n.settingsExportDataDesc,
             ),
-            const Divider(),
-            ListTile(
-              leading: Icon(
-                Icons.auto_awesome,
-                color: hasApiKey ? Colors.green : Theme.of(context).colorScheme.error,
-              ),
-              title: Text(l10n.settingsApiKeyTitle),
-              subtitle: Text(
-                hasApiKey
-                    ? l10n.settingsApiKeySubtitleSet
-                    : l10n.settingsApiKeySubtitleUnset,
-              ),
+            const SizedBox(height: 12),
+            const Divider(height: 1),
+            _SettingsTile(
+              icon: Icons.auto_awesome,
+              iconColor: hasApiKey ? Colors.green : theme.colorScheme.error,
+              title: l10n.settingsApiKeyTitle,
+              description: hasApiKey
+                  ? l10n.settingsApiKeySubtitleSet
+                  : l10n.settingsApiKeySubtitleUnset,
               onTap: () => _showApiKeyDialog(context, ref, l10n, hasApiKey),
             ),
-            const Divider(),
-            ListTile(
-              leading: Icon(Icons.delete_forever,
-                  color: Theme.of(context).colorScheme.error),
-              title: Text(
-                l10n.settingsDeleteAllData,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
+            const SizedBox(height: 12),
+            const Divider(height: 1),
+            _SettingsTile(
+              icon: Icons.delete_forever,
+              iconColor: theme.colorScheme.error,
+              titleColor: theme.colorScheme.error,
+              title: l10n.settingsDeleteAllData,
+              description: l10n.settingsDeleteAllDataDesc,
               onTap: () => _confirmDeleteAll(context, ref, l10n),
             ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: Text(l10n.authLogoutButton),
-              onTap: () => ref.read(authControllerProvider.notifier).logout(),
+            const Divider(height: 1),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.tonalIcon(
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: const StadiumBorder(),
+                ),
+                onPressed: () => ref.read(authControllerProvider.notifier).logout(),
+                icon: const Icon(Icons.logout),
+                label: Text(l10n.authLogoutButton),
+              ),
             ),
+            const SizedBox(height: 16),
           ],
-          ),
         ),
       ),
     );
@@ -171,5 +182,73 @@ class SettingsScreen extends ConsumerWidget {
       await AppDatabase.instance.deleteAllData();
       await ref.read(authControllerProvider.notifier).logout();
     }
+  }
+}
+
+/// A single spacious, self-describing settings row: icon + bold title +
+/// chevron on one line, with a muted explanatory line below — mirrors the
+/// "Ayuda y soporte" / "Preferencias" style card layout the user asked to
+/// match, rather than a cramped single-line ListTile.
+class _SettingsTile extends StatelessWidget {
+  const _SettingsTile({
+    required this.icon,
+    required this.title,
+    required this.description,
+    this.iconColor,
+    this.titleColor,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String description;
+  final Color? iconColor;
+  final Color? titleColor;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(icon,
+                      size: 24, color: iconColor ?? theme.colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: titleColor,
+                      ),
+                    ),
+                  ),
+                  if (onTap != null)
+                    Icon(Icons.chevron_right, color: theme.colorScheme.outline),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.only(left: 38),
+                child: Text(
+                  description,
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -1060,6 +1060,12 @@ abstract class AppLocalizations {
   /// **'Editar perfil'**
   String get settingsEditProfile;
 
+  /// No description provided for @settingsEditProfileDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Actualiza tus datos personales y tus objetivos nutricionales.'**
+  String get settingsEditProfileDesc;
+
   /// No description provided for @settingsChangeGoal.
   ///
   /// In es, this message translates to:
@@ -1072,11 +1078,29 @@ abstract class AppLocalizations {
   /// **'Idioma'**
   String get settingsLanguage;
 
+  /// No description provided for @settingsLanguageDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona el idioma en el que se muestra la aplicación.'**
+  String get settingsLanguageDesc;
+
   /// No description provided for @settingsNotifications.
   ///
   /// In es, this message translates to:
   /// **'Notificaciones'**
   String get settingsNotifications;
+
+  /// No description provided for @settingsNotificationsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Administra los recordatorios y alertas de la app.'**
+  String get settingsNotificationsDesc;
+
+  /// No description provided for @settingsReplayTutorialDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Vuelve a ver la guía de bienvenida con una explicación de cada parte de la app.'**
+  String get settingsReplayTutorialDesc;
 
   /// No description provided for @settingsExportData.
   ///
@@ -1084,11 +1108,23 @@ abstract class AppLocalizations {
   /// **'Exportar información'**
   String get settingsExportData;
 
+  /// No description provided for @settingsExportDataDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Descarga una copia de tu información almacenada en el dispositivo.'**
+  String get settingsExportDataDesc;
+
   /// No description provided for @settingsDeleteAllData.
   ///
   /// In es, this message translates to:
   /// **'Eliminar todos los datos'**
   String get settingsDeleteAllData;
+
+  /// No description provided for @settingsDeleteAllDataDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Borra permanentemente tu información de este dispositivo. No se puede deshacer.'**
+  String get settingsDeleteAllDataDesc;
 
   /// No description provided for @settingsDeleteConfirmTitle.
   ///

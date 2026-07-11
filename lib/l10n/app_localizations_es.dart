@@ -506,19 +506,43 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsEditProfile => 'Editar perfil';
 
   @override
+  String get settingsEditProfileDesc =>
+      'Actualiza tus datos personales y tus objetivos nutricionales.';
+
+  @override
   String get settingsChangeGoal => 'Cambiar objetivo';
 
   @override
   String get settingsLanguage => 'Idioma';
 
   @override
+  String get settingsLanguageDesc =>
+      'Selecciona el idioma en el que se muestra la aplicación.';
+
+  @override
   String get settingsNotifications => 'Notificaciones';
+
+  @override
+  String get settingsNotificationsDesc =>
+      'Administra los recordatorios y alertas de la app.';
+
+  @override
+  String get settingsReplayTutorialDesc =>
+      'Vuelve a ver la guía de bienvenida con una explicación de cada parte de la app.';
 
   @override
   String get settingsExportData => 'Exportar información';
 
   @override
+  String get settingsExportDataDesc =>
+      'Descarga una copia de tu información almacenada en el dispositivo.';
+
+  @override
   String get settingsDeleteAllData => 'Eliminar todos los datos';
+
+  @override
+  String get settingsDeleteAllDataDesc =>
+      'Borra permanentemente tu información de este dispositivo. No se puede deshacer.';
 
   @override
   String get settingsDeleteConfirmTitle => '¿Eliminar todos los datos?';
