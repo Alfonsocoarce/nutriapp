@@ -2,8 +2,8 @@ import '../entities/food_entry.dart';
 import '../entities/user_profile.dart';
 import '../entities/weekly_summary.dart';
 
-/// Buckets a week's worth of [FoodEntry] rows into 7 [DailySummary]s
-/// (Monday..Sunday) against the user's daily calorie goal.
+/// Buckets a 7-day window of [FoodEntry] rows into 7 [DailySummary]s,
+/// starting at [weekStart], against the user's daily calorie goal.
 class ComputeWeeklySummaryUseCase {
   WeeklySummary call({
     required UserProfile profile,
@@ -50,8 +50,12 @@ class ComputeWeeklySummaryUseCase {
   }
 }
 
-/// Returns the Monday (midnight) of the week containing [date].
-DateTime mondayOfWeek(DateTime date) {
+/// Returns the start (midnight) of the trailing 7-day window ending on
+/// [date] — e.g. for a Wednesday this is last Thursday, not "this Monday".
+/// Used instead of calendar Monday-Sunday weeks so the report is a
+/// continuous rolling view of the user's habits over the last 7 days that
+/// never resets at a fixed weekday.
+DateTime rollingWeekStart(DateTime date) {
   final d = DateTime(date.year, date.month, date.day);
-  return d.subtract(Duration(days: d.weekday - DateTime.monday));
+  return d.subtract(const Duration(days: 6));
 }

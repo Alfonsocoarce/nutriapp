@@ -101,13 +101,15 @@ void main() {
     });
   });
 
-  group('mondayOfWeek', () {
-    test('returns the same date when already a Monday', () {
-      expect(mondayOfWeek(monday), monday);
+  group('rollingWeekStart', () {
+    test('returns 6 days before the given date', () {
+      expect(rollingWeekStart(DateTime(2026, 7, 12)), DateTime(2026, 7, 6));
     });
 
-    test('rolls a Sunday back to the preceding Monday', () {
-      expect(mondayOfWeek(DateTime(2026, 7, 12)), monday);
+    test('does not snap to Monday — any weekday just goes back 6 days', () {
+      // 2026-07-08 is a Wednesday; the window should start the previous
+      // Thursday, not the Monday of that calendar week.
+      expect(rollingWeekStart(DateTime(2026, 7, 8)), DateTime(2026, 7, 2));
     });
   });
 

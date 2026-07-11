@@ -442,6 +442,24 @@ abstract class AppLocalizations {
   /// **'Peso actual'**
   String get dashboardCurrentWeight;
 
+  /// No description provided for @dashboardYourGoalsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tus objetivos'**
+  String get dashboardYourGoalsTitle;
+
+  /// No description provided for @dashboardYourGoalsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Puedes cambiarlos cuando quieras en Configuración → Editar perfil — la IA ajustará tus planes y recomendaciones automáticamente.'**
+  String get dashboardYourGoalsSubtitle;
+
+  /// No description provided for @dashboardYourGoalsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no has seleccionado objetivos nutricionales. Agrégalos en Configuración → Editar perfil.'**
+  String get dashboardYourGoalsEmpty;
+
   /// No description provided for @dashboardTodayMeals.
   ///
   /// In es, this message translates to:
@@ -709,25 +727,25 @@ abstract class AppLocalizations {
   /// No description provided for @reportsGeneratePdf.
   ///
   /// In es, this message translates to:
-  /// **'Generar PDF'**
+  /// **'Generar resumen y recomendaciones'**
   String get reportsGeneratePdf;
 
   /// No description provided for @reportsGenerating.
   ///
   /// In es, this message translates to:
-  /// **'Generando PDF...'**
+  /// **'Generando resumen...'**
   String get reportsGenerating;
 
   /// No description provided for @reportsGeneratedSnackbar.
   ///
   /// In es, this message translates to:
-  /// **'PDF generado y listo para compartir'**
+  /// **'Resumen generado y listo para compartir'**
   String get reportsGeneratedSnackbar;
 
   /// No description provided for @reportsGenerationFailed.
   ///
   /// In es, this message translates to:
-  /// **'No se pudo generar el PDF. Intenta de nuevo.'**
+  /// **'No se pudo generar el resumen. Intenta de nuevo.'**
   String get reportsGenerationFailed;
 
   /// No description provided for @reportsNoProfile.
@@ -739,7 +757,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportsAverages.
   ///
   /// In es, this message translates to:
-  /// **'Promedios de la semana'**
+  /// **'Promedios de los últimos 7 días'**
   String get reportsAverages;
 
   /// No description provided for @reportsDaysLogged.
@@ -801,24 +819,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Mi resumen semanal de NutriApp'**
   String get reportsShareSubject;
-
-  /// No description provided for @reportsMealPlanTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Plan de comidas sugerido'**
-  String get reportsMealPlanTitle;
-
-  /// No description provided for @reportsMealPlanSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Próximos 3 días, según tu despensa actual y tus hábitos alimenticios'**
-  String get reportsMealPlanSubtitle;
-
-  /// No description provided for @reportsMealPlanUnavailable.
-  ///
-  /// In es, this message translates to:
-  /// **'No se pudo generar un plan de comidas esta vez. Agrega productos a tu despensa o revisa tu clave de IA en Configuración.'**
-  String get reportsMealPlanUnavailable;
 
   /// No description provided for @pantryTitle.
   ///

@@ -185,6 +185,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get dashboardCurrentWeight => 'Peso actual';
 
   @override
+  String get dashboardYourGoalsTitle => 'Tus objetivos';
+
+  @override
+  String get dashboardYourGoalsSubtitle =>
+      'Puedes cambiarlos cuando quieras en Configuración → Editar perfil — la IA ajustará tus planes y recomendaciones automáticamente.';
+
+  @override
+  String get dashboardYourGoalsEmpty =>
+      'Aún no has seleccionado objetivos nutricionales. Agrégalos en Configuración → Editar perfil.';
+
+  @override
   String get dashboardTodayMeals => 'Comidas de hoy';
 
   @override
@@ -320,24 +331,25 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reportsTitle => 'Resumen semanal';
 
   @override
-  String get reportsGeneratePdf => 'Generar PDF';
+  String get reportsGeneratePdf => 'Generar resumen y recomendaciones';
 
   @override
-  String get reportsGenerating => 'Generando PDF...';
+  String get reportsGenerating => 'Generando resumen...';
 
   @override
-  String get reportsGeneratedSnackbar => 'PDF generado y listo para compartir';
+  String get reportsGeneratedSnackbar =>
+      'Resumen generado y listo para compartir';
 
   @override
   String get reportsGenerationFailed =>
-      'No se pudo generar el PDF. Intenta de nuevo.';
+      'No se pudo generar el resumen. Intenta de nuevo.';
 
   @override
   String get reportsNoProfile =>
       'Completa tu perfil para generar resúmenes semanales.';
 
   @override
-  String get reportsAverages => 'Promedios de la semana';
+  String get reportsAverages => 'Promedios de los últimos 7 días';
 
   @override
   String get reportsDaysLogged => 'Días con registros';
@@ -368,17 +380,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get reportsShareSubject => 'Mi resumen semanal de NutriApp';
-
-  @override
-  String get reportsMealPlanTitle => 'Plan de comidas sugerido';
-
-  @override
-  String get reportsMealPlanSubtitle =>
-      'Próximos 3 días, según tu despensa actual y tus hábitos alimenticios';
-
-  @override
-  String get reportsMealPlanUnavailable =>
-      'No se pudo generar un plan de comidas esta vez. Agrega productos a tu despensa o revisa tu clave de IA en Configuración.';
 
   @override
   String get pantryTitle => 'Despensa';

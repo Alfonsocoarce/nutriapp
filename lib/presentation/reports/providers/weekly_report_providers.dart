@@ -48,10 +48,13 @@ final currentPantryItemsProvider = FutureProvider<List<PantryItem>>((ref) async 
   return ref.watch(pantryRepositoryProvider).allItems(userId);
 });
 
-/// The Monday (midnight) of the week currently shown on the report screen.
-/// Defaults to this week; navigated with the prev/next arrows.
+/// The start (midnight) of the trailing 7-day window currently shown on the
+/// report screen. Defaults to the last 7 days ending today — a continuous
+/// rolling view of the user's habits, not a calendar Monday-Sunday week
+/// that resets every Monday — navigated 7 days at a time with the
+/// prev/next arrows.
 final selectedWeekStartProvider = StateProvider<DateTime>((ref) {
-  return mondayOfWeek(DateTime.now());
+  return rollingWeekStart(DateTime.now());
 });
 
 /// Raw entries for the selected week — fetched once and shared by both the

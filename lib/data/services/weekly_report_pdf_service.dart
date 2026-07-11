@@ -69,7 +69,7 @@ class WeeklyReportPdfService {
 
     double y = 0;
     page.graphics.drawString(
-      'NutriApp - Resumen semanal',
+      'NutriApp - Resumen y recomendaciones',
       titleFont,
       bounds: Rect.fromLTWH(0, y, pageWidth, 28),
     );
@@ -119,7 +119,7 @@ class WeeklyReportPdfService {
     page = gridResult?.page ?? page;
     y = (gridResult?.bounds.bottom ?? y) + 24;
 
-    page.graphics.drawString('Promedios de la semana', sectionFont,
+    page.graphics.drawString('Promedios de los últimos 7 días', sectionFont,
         bounds: Rect.fromLTWH(0, y, pageWidth, 20));
     y += 26;
 

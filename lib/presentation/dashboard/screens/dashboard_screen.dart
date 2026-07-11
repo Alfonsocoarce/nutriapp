@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/localization/enum_labels.dart';
 import '../../../core/theme/chart_colors.dart';
+import '../../../domain/entities/nutrition_goal.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../providers/dashboard_providers.dart';
@@ -78,6 +79,8 @@ class DashboardScreen extends ConsumerWidget {
                         Text('${profile.currentWeightKg} ${l10n.commonKg}'),
                       ],
                     ),
+                    const Divider(height: 32),
+                    _YourGoalsSection(goals: profile.goals, l10n: l10n),
                     const Divider(height: 32),
                     Text(l10n.dashboardTodayMeals,
                         style: Theme.of(context).textTheme.titleMedium),
@@ -154,6 +157,48 @@ class _MealRow extends StatelessWidget {
   }
 }
 
+class _YourGoalsSection extends StatelessWidget {
+  const _YourGoalsSection({required this.goals, required this.l10n});
+
+  final List<NutritionGoal> goals;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.dashboardYourGoalsTitle, style: theme.textTheme.titleMedium),
+        const SizedBox(height: 4),
+        Text(
+          goals.isEmpty ? l10n.dashboardYourGoalsEmpty : l10n.dashboardYourGoalsSubtitle,
+          style: theme.textTheme.bodySmall
+              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        ),
+        if (goals.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: goals
+                .map((goal) => Chip(
+                      label: Text(goal.label(l10n)),
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                      labelStyle: TextStyle(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      side: BorderSide.none,
+                    ))
+                .toList(),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
 class _CalorieRing extends StatelessWidget {
   const _CalorieRing({
     required this.consumed,
@@ -172,7 +217,7 @@ class _CalorieRing extends StatelessWidget {
     final fraction = goal <= 0 ? 0.0 : (consumed / goal).clamp(0, 1).toDouble();
     final overGoal = goal > 0 && consumed > goal;
     return SizedBox(
-      height: 200,
+      height: 220,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -180,33 +225,52 @@ class _CalorieRing extends StatelessWidget {
             PieChartData(
               startDegreeOffset: -90,
               sectionsSpace: 0,
-              centerSpaceRadius: 70,
+              centerSpaceRadius: 78,
               sections: [
                 PieChartSectionData(
                   value: fraction * 100,
                   color: overGoal ? ChartColors.red : ChartColors.blue,
                   showTitle: false,
-                  radius: 22,
+                  radius: 18,
                 ),
                 PieChartSectionData(
                   value: (1 - fraction) * 100,
                   color: ChartColors.neutral.withValues(alpha: 0.3),
                   showTitle: false,
-                  radius: 22,
+                  radius: 18,
                 ),
               ],
             ),
           ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(consumed.toStringAsFixed(0),
-                  style: Theme.of(context).textTheme.headlineMedium),
-              Text(l10n.dashboardCaloriesConsumed,
-                  style: Theme.of(context).textTheme.bodySmall),
-              const SizedBox(height: 4),
-              Text('${remaining.toStringAsFixed(0)} ${l10n.dashboardCaloriesRemaining}'),
-            ],
+          // Constrained to a width comfortably inside the ring's hole
+          // (2 × centerSpaceRadius) so the text never crosses into the
+          // colored ring itself, wrapping onto a second line instead.
+          SizedBox(
+            width: 150,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  consumed.toStringAsFixed(0),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  l10n.dashboardCaloriesConsumed,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '${remaining.toStringAsFixed(0)} ${l10n.dashboardCaloriesRemaining}',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
           ),
         ],
       ),

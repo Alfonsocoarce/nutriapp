@@ -82,8 +82,8 @@ Perfil del usuario:
 - Peso actual: ${profile.currentWeightKg} kg, peso objetivo: ${profile.targetWeightKg} kg
 - Meta calórica diaria estimada: ${profile.dailyCalorieGoal.round()} kcal
 
-Resumen de la semana pasada (lunes a domingo, ${summary.daysLogged} de 7
-días con registros):
+Resumen de los últimos 7 días (${summary.daysLogged} de 7 días con
+registros):
 - Calorías promedio consumidas: ${summary.avgCaloriesConsumed.round()} kcal/día
 - Proteína promedio: ${summary.avgProteinGrams.round()} g/día
 - Carbohidratos promedio: ${summary.avgCarbsGrams.round()} g/día
