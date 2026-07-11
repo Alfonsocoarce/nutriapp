@@ -370,6 +370,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reportsShareSubject => 'Mi resumen semanal de NutriApp';
 
   @override
+  String get reportsMealPlanTitle => 'Plan de comidas sugerido';
+
+  @override
+  String get reportsMealPlanSubtitle =>
+      'Próximos 3 días, según tu despensa actual y tus hábitos alimenticios';
+
+  @override
+  String get reportsMealPlanUnavailable =>
+      'No se pudo generar un plan de comidas esta vez. Agrega productos a tu despensa o revisa tu clave de IA en Configuración.';
+
+  @override
   String get pantryTitle => 'Despensa';
 
   @override

@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import '../../domain/entities/food_frequency.dart';
+import '../../domain/entities/meal_plan.dart';
 import '../../domain/entities/weekly_summary.dart';
 
 const _weekdayNames = [
@@ -53,6 +54,7 @@ class WeeklyReportPdfService {
     WeeklySummary summary, {
     required List<FoodFrequency> topFoods,
     required List<String> recommendations,
+    required MealPlan mealPlan,
   }) async {
     final document = PdfDocument();
     var page = document.pages.add();
@@ -164,6 +166,39 @@ class WeeklyReportPdfService {
       y = (result?.bounds.bottom ?? y + 16) + 8;
     }
     y += 14;
+
+    if (mealPlan.days.isNotEmpty) {
+      // Starts on a fresh page rather than continuing the flowing layout —
+      // by this point `y` is already close to the page bottom, and letting
+      // Syncfusion's auto-pagination kick in this late in a single-call
+      // layout chain triggered runaway page creation (observed as an
+      // out-of-memory crash) instead of cleanly wrapping to a new page.
+      page = document.pages.add();
+      y = 0;
+      page.graphics.drawString(
+          'Plan de comidas sugerido (según tu despensa y hábitos)',
+          sectionFont,
+          bounds: Rect.fromLTWH(0, y, pageWidth, 20));
+      y += 26;
+      for (final day in mealPlan.days) {
+        final dayResult = PdfTextElement(
+          text: '${_weekdayNames[day.date.weekday - 1]} ${day.date.day}/${day.date.month}',
+          font: PdfStandardFont(PdfFontFamily.helvetica, 11, style: PdfFontStyle.bold),
+        ).draw(page: page, bounds: Rect.fromLTWH(0, y, pageWidth, 0));
+        page = dayResult?.page ?? page;
+        y = (dayResult?.bounds.bottom ?? y + 16) + 4;
+        for (final meal in day.meals) {
+          final mealResult = PdfTextElement(
+            text: '-  ${meal.mealLabel}: ${meal.description}',
+            font: bodyFont,
+          ).draw(page: page, bounds: Rect.fromLTWH(10, y, pageWidth - 10, 0));
+          page = mealResult?.page ?? page;
+          y = (mealResult?.bounds.bottom ?? y + 16) + 2;
+        }
+        y += 8;
+      }
+      y += 6;
+    }
 
     PdfTextElement(
       text: 'Este resumen es generado con inteligencia artificial a partir de '

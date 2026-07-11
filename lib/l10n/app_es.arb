@@ -126,6 +126,9 @@
   "reportsTopFoods": "Alimentos más consumidos",
   "reportsNoEntriesThisDay": "Sin registros",
   "reportsShareSubject": "Mi resumen semanal de NutriApp",
+  "reportsMealPlanTitle": "Plan de comidas sugerido",
+  "reportsMealPlanSubtitle": "Próximos 3 días, según tu despensa actual y tus hábitos alimenticios",
+  "reportsMealPlanUnavailable": "No se pudo generar un plan de comidas esta vez. Agrega productos a tu despensa o revisa tu clave de IA en Configuración.",
 
   "pantryTitle": "Despensa",
   "pantryAddItem": "Agregar producto",

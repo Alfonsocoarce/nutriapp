@@ -2,15 +2,18 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../data/services/gemini_meal_planner_service.dart';
 import '../../../data/services/gemini_weekly_recommendations_service.dart';
 import '../../../data/services/weekly_report_pdf_service.dart';
 import '../../../domain/entities/food_entry.dart';
 import '../../../domain/entities/food_frequency.dart';
+import '../../../domain/entities/pantry_item.dart';
 import '../../../domain/entities/weekly_summary.dart';
 import '../../../domain/usecases/compute_top_foods.dart';
 import '../../../domain/usecases/compute_weekly_summary_usecase.dart';
 import '../../auth/providers/auth_providers.dart';
 import '../../food_log/providers/food_log_providers.dart';
+import '../../pantry/providers/pantry_providers.dart';
 import '../../profile/providers/profile_providers.dart';
 
 final weeklyReportPdfServiceProvider = Provider<WeeklyReportPdfService>((ref) {
@@ -20,6 +23,29 @@ final weeklyReportPdfServiceProvider = Provider<WeeklyReportPdfService>((ref) {
 final weeklyRecommendationsServiceProvider =
     Provider<GeminiWeeklyRecommendationsService>((ref) {
   return GeminiWeeklyRecommendationsService();
+});
+
+final mealPlannerServiceProvider = Provider<GeminiMealPlannerService>((ref) {
+  return GeminiMealPlannerService();
+});
+
+/// Meals logged over the last 30 days regardless of which week is selected
+/// on screen — the meal planner uses this wider window to infer the user's
+/// habitual food combinations, which a single week is too little data for.
+final habitEntriesProvider = FutureProvider<List<FoodEntry>>((ref) async {
+  final userId = ref.watch(currentUserIdProvider);
+  if (userId == null) return const [];
+
+  final repository = ref.watch(foodLogRepositoryProvider);
+  final now = DateTime.now();
+  return repository.entriesForRange(userId, now.subtract(const Duration(days: 30)), now);
+});
+
+final currentPantryItemsProvider = FutureProvider<List<PantryItem>>((ref) async {
+  final userId = ref.watch(currentUserIdProvider);
+  if (userId == null) return const [];
+
+  return ref.watch(pantryRepositoryProvider).allItems(userId);
 });
 
 /// The Monday (midnight) of the week currently shown on the report screen.

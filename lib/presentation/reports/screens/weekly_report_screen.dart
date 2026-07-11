@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../core/theme/chart_colors.dart';
 import '../../../data/services/weekly_report_pdf_service.dart';
 import '../../../domain/entities/food_frequency.dart';
+import '../../../domain/entities/meal_plan.dart';
 import '../../../domain/entities/weekly_summary.dart';
 import '../../../domain/usecases/compute_weekly_summary_usecase.dart';
 import '../../../l10n/app_localizations.dart';
@@ -20,6 +21,7 @@ class WeeklyReportScreen extends ConsumerStatefulWidget {
 
 class _WeeklyReportScreenState extends ConsumerState<WeeklyReportScreen> {
   bool _generating = false;
+  MealPlan? _mealPlan;
 
   Future<void> _generateAndShare(WeeklySummary summary) async {
     final l10n = AppLocalizations.of(context)!;
@@ -29,13 +31,20 @@ class _WeeklyReportScreenState extends ConsumerState<WeeklyReportScreen> {
       final recommendations = await ref
           .read(weeklyRecommendationsServiceProvider)
           .generate(summary, topFoods);
+      final pantryItems = await ref.read(currentPantryItemsProvider.future);
+      final habitEntries = await ref.read(habitEntriesProvider.future);
+      final mealPlan = await ref
+          .read(mealPlannerServiceProvider)
+          .generate(summary, pantryItems, habitEntries);
       final file = await ref.read(weeklyReportPdfServiceProvider).generate(
             summary,
             topFoods: topFoods,
             recommendations: recommendations,
+            mealPlan: mealPlan,
           );
       ref.invalidate(generatedReportsProvider);
       if (!mounted) return;
+      setState(() => _mealPlan = mealPlan);
       await SharePlus.instance.share(ShareParams(
         files: [XFile(file.path, mimeType: 'application/pdf')],
         subject: l10n.reportsShareSubject,
@@ -114,6 +123,7 @@ class _WeeklyReportScreenState extends ConsumerState<WeeklyReportScreen> {
                       summary: summary,
                       topFoods: topFoodsAsync.valueOrNull ?? const [],
                       generating: _generating,
+                      mealPlan: _mealPlan,
                       onGenerate: () => _generateAndShare(summary),
                     ),
             ),
@@ -161,12 +171,14 @@ class _WeeklyReportBody extends StatelessWidget {
     required this.summary,
     required this.topFoods,
     required this.generating,
+    required this.mealPlan,
     required this.onGenerate,
   });
 
   final WeeklySummary summary;
   final List<FoodFrequency> topFoods;
   final bool generating;
+  final MealPlan? mealPlan;
   final VoidCallback onGenerate;
 
   static const _weekdayShort = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -266,7 +278,80 @@ class _WeeklyReportBody extends StatelessWidget {
               : const Icon(Icons.picture_as_pdf),
           label: Text(generating ? l10n.reportsGenerating : l10n.reportsGeneratePdf),
         ),
+        if (mealPlan != null) ...[
+          const SizedBox(height: 20),
+          Text(l10n.reportsMealPlanTitle, style: theme.textTheme.titleMedium),
+          const SizedBox(height: 4),
+          Text(l10n.reportsMealPlanSubtitle,
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          const SizedBox(height: 8),
+          mealPlan!.days.isEmpty
+              ? Text(l10n.reportsMealPlanUnavailable, style: theme.textTheme.bodyMedium)
+              : _MealPlanSection(mealPlan: mealPlan!),
+        ],
       ],
+    );
+  }
+}
+
+class _MealPlanSection extends StatelessWidget {
+  const _MealPlanSection({required this.mealPlan});
+
+  final MealPlan mealPlan;
+
+  static const _weekdayNames = [
+    'Lunes',
+    'Martes',
+    'Miércoles',
+    'Jueves',
+    'Viernes',
+    'Sábado',
+    'Domingo',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: mealPlan.days.map((day) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${_weekdayNames[day.date.weekday - 1]} ${day.date.day}/${day.date.month}',
+                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 6),
+              for (final meal in day.meals)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: RichText(
+                    text: TextSpan(
+                      style: theme.textTheme.bodyMedium
+                          ?.copyWith(color: theme.colorScheme.onSurface),
+                      children: [
+                        TextSpan(
+                          text: '${meal.mealLabel}: ',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        TextSpan(text: meal.description),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 }

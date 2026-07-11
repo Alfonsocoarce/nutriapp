@@ -802,6 +802,24 @@ abstract class AppLocalizations {
   /// **'Mi resumen semanal de NutriApp'**
   String get reportsShareSubject;
 
+  /// No description provided for @reportsMealPlanTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Plan de comidas sugerido'**
+  String get reportsMealPlanTitle;
+
+  /// No description provided for @reportsMealPlanSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximos 3 días, según tu despensa actual y tus hábitos alimenticios'**
+  String get reportsMealPlanSubtitle;
+
+  /// No description provided for @reportsMealPlanUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo generar un plan de comidas esta vez. Agrega productos a tu despensa o revisa tu clave de IA en Configuración.'**
+  String get reportsMealPlanUnavailable;
+
   /// No description provided for @pantryTitle.
   ///
   /// In es, this message translates to:
