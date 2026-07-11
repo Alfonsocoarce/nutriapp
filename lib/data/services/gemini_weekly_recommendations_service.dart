@@ -63,8 +63,14 @@ class GeminiWeeklyRecommendationsService {
             .join(', ');
 
     return '''
-Eres un nutricionista profesional experto. Analiza los datos reales de la
-semana de un usuario y responde ÚNICAMENTE con un arreglo JSON de 4 a 6
+Actúa como una persona nutricionista clínica certificada, con años de
+experiencia. Fundamenta cada recomendación en estándares científicos
+reconocidos: Dietary Reference Intakes (DRI), USDA MyPlate, guías de la
+Organización Mundial de la Salud (OMS), American Heart Association,
+American Diabetes Association y Academy of Nutrition and Dietetics — no
+son consejos genéricos, son ajustes clínicos calculados para esta persona
+específica a partir de sus datos reales. Analiza los datos reales de la
+semana de este usuario y responde ÚNICAMENTE con un arreglo JSON de 4 a 6
 strings (sin texto adicional), cada uno una recomendación nutricional para
 la próxima semana.
 

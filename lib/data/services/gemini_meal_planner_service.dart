@@ -2,6 +2,7 @@ import '../../domain/entities/food_entry.dart';
 import '../../domain/entities/meal_plan.dart';
 import '../../domain/entities/nutrition_goal.dart';
 import '../../domain/entities/pantry_item.dart';
+import '../../domain/entities/sex.dart';
 import '../../domain/entities/weekly_summary.dart';
 import 'gemini_food_recognition_service.dart';
 
@@ -102,6 +103,7 @@ class GeminiMealPlannerService {
     final restrictionsText =
         profile.restrictions.isEmpty ? 'Ninguna' : profile.restrictions.join(', ');
     final allergiesText = profile.allergies.isEmpty ? 'Ninguna' : profile.allergies.join(', ');
+    final diseasesText = profile.diseases.isEmpty ? 'Ninguna' : profile.diseases.join(', ');
 
     final pantryText = pantryItems
         .map((item) {
@@ -126,22 +128,43 @@ class GeminiMealPlannerService {
     final firstPlanDate = DateTime(today.year, today.month, today.day)
         .add(const Duration(days: 1));
 
+    final age = profile.ageYears;
+    final sexText = switch (profile.sex) {
+      Sex.male => 'Masculino',
+      Sex.female => 'Femenino',
+      Sex.other => 'Otro',
+    };
+
     return '''
-Eres un nutricionista y planificador de comidas experto. Genera un plan de
-comidas de $_planDays días (empezando el ${_isoDate(firstPlanDate)}) para un
-usuario, usando SOBRE TODO los productos que ya tiene en su despensa, y
-combinando los alimentos de forma parecida a como el usuario ya los combina
-normalmente (ver "Hábitos recientes" abajo). Responde ÚNICAMENTE con un
-arreglo JSON de $_planDays objetos, cada uno con "date" (formato
-YYYY-MM-DD) y "meals" (arreglo de objetos con "mealLabel" en español, ej.
-"Desayuno"/"Almuerzo"/"Cena"/"Merienda", y "description": una comida
-concreta y apetecible con sus ingredientes principales).
+Actúa como una persona nutricionista clínica certificada, con años de
+experiencia elaborando planes de alimentación individualizados. Cada
+decisión que tomes (elección de alimentos, tamaño de porción, distribución
+calórica por tiempo de comida) debe estar fundamentada en estándares
+científicos reconocidos: Dietary Reference Intakes (DRI), USDA MyPlate,
+guías de la Organización Mundial de la Salud (OMS), American Heart
+Association, American Diabetes Association y Academy of Nutrition and
+Dietetics. No es un plan genérico de recetario: es un plan clínico
+calculado para esta persona específica.
+
+Genera un plan de comidas de $_planDays días (empezando el
+${_isoDate(firstPlanDate)}), usando SOBRE TODO los productos que ya tiene
+en su despensa, y combinando los alimentos de forma parecida a como el
+usuario ya los combina normalmente (ver "Hábitos recientes" abajo).
+Responde ÚNICAMENTE con un arreglo JSON de $_planDays objetos, cada uno
+con "date" (formato YYYY-MM-DD) y "meals" (arreglo de objetos con
+"mealLabel" en español, ej. "Desayuno"/"Almuerzo"/"Cena"/"Merienda", y
+"description": la comida con CADA ingrediente y su porción exacta — ver
+regla de precisión de porciones abajo, es obligatoria).
 
 Perfil del usuario:
+- Edad: $age años, Sexo: $sexText
+- Estatura: ${profile.heightCm.round()} cm, Peso actual: ${profile.currentWeightKg} kg, Peso objetivo: ${profile.targetWeightKg} kg
+- Nivel de actividad física: ${profile.activityLevel.name}
 - Objetivo(s): $goalsText
+- Condiciones de salud: $diseasesText
 - Restricciones alimentarias: $restrictionsText
 - Alergias: $allergiesText
-- Meta calórica diaria estimada: ${profile.dailyCalorieGoal.round()} kcal
+- Meta calórica diaria calculada (Mifflin-St Jeor × actividad): ${profile.dailyCalorieGoal.round()} kcal
 
 Despensa actual (producto, cantidad, y aviso si vence pronto o ya venció):
 $pantryText
@@ -151,7 +174,32 @@ Hábitos recientes (comidas registradas en los últimos días, en formato
 combina alimentos y qué tipo de comidas prefiere en cada momento del día:
 $habitsText
 
-Instrucciones:
+REGLA DE PRECISIÓN DE PORCIONES (obligatoria, sin excepciones):
+- Cada alimento mencionado en "description" DEBE llevar su cantidad
+  explícita: gramos (g), mililitros (ml), o unidades contables con su
+  equivalente (ej. "2 huevos", "2 rodajas de pan integral (60 g)", "1/2
+  taza de arroz cocido (100 g)", "200 g de ensalada de tomate y lechuga",
+  "1/4 de aguacate (50 g)", "150 ml de jugo de naranja natural"). Nunca
+  uses cantidades vagas como "un poco de", "algo de" o un ingrediente sin
+  porción.
+- Calcula cada porción para que la suma de las comidas del día se
+  aproxime a la meta calórica diaria, distribuida de forma clínicamente
+  razonable entre los tiempos de comida (por ejemplo, aproximadamente
+  25-30% desayuno, 30-35% almuerzo, 25-30% cena, 10-15% meriendas si las
+  hay), ajustando esa distribución si el objetivo del usuario lo amerita.
+- Ajusta la composición de macronutrientes de cada porción al objetivo
+  del usuario usando criterio profesional (ej. mayor proteína por comida
+  si el objetivo incluye "Aumentar masa muscular"; carbohidratos de bajo
+  índice glucémico y control de porción si hay diabetes; sodio reducido
+  si hay condiciones cardiovasculares; déficit calórico moderado y alta
+  saciedad —fibra y proteína— si el objetivo es "Perder peso").
+- Usa tamaños de porción de referencia estándar (ej. una porción de
+  proteína magra cocida ≈ 100-150 g, una porción de carbohidrato
+  complejo cocido ≈ 100-150 g o 1/2-1 taza, una porción de grasa
+  saludable como aguacate o aceite ≈ 10-15 g o 1 cucharada) como punto de
+  partida, y ajústalos según la meta calórica y el objetivo del usuario.
+
+Otras instrucciones:
 - Prioriza usar los productos de la despensa, especialmente los marcados
   como "vence en X días" o "YA VENCIDO", para evitar que se desperdicien.
 - No repitas exactamente la misma comida los $_planDays días; varía dentro
@@ -162,8 +210,6 @@ Instrucciones:
   razonable, puedes sugerir 1-2 ingredientes adicionales comunes que no
   estén en la despensa, pero la mayoría de cada comida debe salir de la
   despensa.
-- Ajusta las porciones/tipo de comida a la meta calórica y objetivo del
-  usuario.
 - Responde en español, solo el arreglo JSON, sin texto ni markdown
   adicional.
 ''';
