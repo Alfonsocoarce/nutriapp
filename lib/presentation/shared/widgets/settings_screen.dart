@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 
+import '../../../core/security/notification_preferences_store.dart';
 import '../../../data/local/app_database.dart';
+import '../../../data/services/data_export_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/providers/auth_providers.dart';
+import '../../food_log/providers/food_log_providers.dart';
 import '../../onboarding/screens/onboarding_screen.dart';
+import '../../pantry/providers/pantry_providers.dart';
+import '../../profile/providers/profile_providers.dart';
 import '../../profile/screens/profile_setup_screen.dart';
 import '../../settings/providers/api_key_providers.dart';
+import '../../settings/providers/notification_providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -17,6 +24,8 @@ class SettingsScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final apiKeyAsync = ref.watch(apiKeyControllerProvider);
     final hasApiKey = apiKeyAsync.valueOrNull?.isNotEmpty ?? false;
+    final notifPrefs = ref.watch(notificationPreferencesProvider).valueOrNull ??
+        NotificationPreferences.defaultValue;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
@@ -40,24 +49,30 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const Divider(height: 1),
             _SettingsTile(
-              icon: Icons.notifications_outlined,
+              icon: notifPrefs.enabled
+                  ? Icons.notifications_active
+                  : Icons.notifications_outlined,
+              iconColor: notifPrefs.enabled ? theme.colorScheme.primary : null,
               title: l10n.settingsNotifications,
-              description: l10n.settingsNotificationsDesc,
+              description: notifPrefs.enabled
+                  ? l10n.settingsNotificationsEnabledDesc(
+                      TimeOfDay(hour: notifPrefs.hour, minute: notifPrefs.minute).format(context))
+                  : l10n.settingsNotificationsDesc,
+              onTap: () => _showNotificationsDialog(context, ref, l10n, notifPrefs),
             ),
             const Divider(height: 1),
             _SettingsTile(
               icon: Icons.help_outline,
               title: l10n.settingsReplayTutorial,
               description: l10n.settingsReplayTutorialDesc,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-              ),
+              onTap: () => showOnboardingSheet(context),
             ),
             const Divider(height: 1),
             _SettingsTile(
               icon: Icons.ios_share,
               title: l10n.settingsExportData,
               description: l10n.settingsExportDataDesc,
+              onTap: () => _exportData(context, ref, l10n),
             ),
             const SizedBox(height: 12),
             const Divider(height: 1),
@@ -181,6 +196,93 @@ class SettingsScreen extends ConsumerWidget {
     if (confirmed == true) {
       await AppDatabase.instance.deleteAllData();
       await ref.read(authControllerProvider.notifier).logout();
+    }
+  }
+
+  Future<void> _showNotificationsDialog(BuildContext context, WidgetRef ref,
+      AppLocalizations l10n, NotificationPreferences current) async {
+    var enabled = current.enabled;
+    var time = TimeOfDay(hour: current.hour, minute: current.minute);
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text(l10n.settingsNotificationsDialogTitle),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.settingsNotificationsToggleLabel),
+                value: enabled,
+                onChanged: (v) => setDialogState(() => enabled = v),
+              ),
+              if (enabled)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l10n.settingsNotificationsTimeLabel),
+                  trailing: Text(time.format(ctx),
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  onTap: () async {
+                    final picked = await showTimePicker(context: ctx, initialTime: time);
+                    if (picked != null) setDialogState(() => time = picked);
+                  },
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(l10n.settingsCancel),
+            ),
+            FilledButton(
+              onPressed: () async {
+                Navigator.of(ctx).pop();
+                final granted = await ref.read(notificationPreferencesProvider.notifier).save(
+                      enabled: enabled,
+                      time: time,
+                      title: l10n.settingsNotificationsPushTitle,
+                      body: l10n.settingsNotificationsPushBody,
+                    );
+                if (!granted && enabled && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.settingsNotificationsPermissionDenied)));
+                }
+              },
+              child: Text(l10n.settingsSave),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _exportData(BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+    final userId = ref.read(currentUserIdProvider);
+    final profile = ref.read(profileControllerProvider).valueOrNull;
+    if (userId == null || profile == null) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final foodEntries = await ref
+          .read(foodLogRepositoryProvider)
+          .entriesForRange(userId, DateTime(2000), DateTime.now().add(const Duration(days: 1)));
+      final pantryItems = await ref.read(pantryRepositoryProvider).allItems(userId);
+      final file = await DataExportService().export(
+        profile: profile,
+        foodEntries: foodEntries,
+        pantryItems: pantryItems,
+      );
+      if (!context.mounted) return;
+      await SharePlus.instance.share(ShareParams(
+        files: [XFile(file.path, mimeType: 'application/json')],
+        subject: l10n.settingsExportShareSubject,
+        text: l10n.settingsExportShareSubject,
+      ));
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.settingsExportFailed)));
     }
   }
 }

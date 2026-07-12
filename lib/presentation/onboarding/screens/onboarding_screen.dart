@@ -20,17 +20,27 @@ class _OnboardingPage {
   final String description;
 }
 
-/// First-time app walkthrough — one page per bottom-nav tab, explaining
-/// what it does. Shown once automatically after profile setup (see
+/// Shows the first-time app walkthrough as a compact, dismissible modal
+/// sheet rather than a full-screen takeover — quick to skim, doesn't block
+/// the whole app. Shown once automatically after profile setup (see
 /// [MainShell]), and replayable anytime from Configuración.
-class OnboardingScreen extends ConsumerStatefulWidget {
-  const OnboardingScreen({super.key});
-
-  @override
-  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
+Future<void> showOnboardingSheet(BuildContext context) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => const _OnboardingSheet(),
+  );
 }
 
-class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
+class _OnboardingSheet extends ConsumerStatefulWidget {
+  const _OnboardingSheet();
+
+  @override
+  ConsumerState<_OnboardingSheet> createState() => _OnboardingSheetState();
+}
+
+class _OnboardingSheetState extends ConsumerState<_OnboardingSheet> {
   final _controller = PageController();
   int _page = 0;
 
@@ -52,6 +62,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final pages = [
       _OnboardingPage(
         icon: Icons.dashboard,
@@ -86,18 +97,38 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     ];
     final isLastPage = _page == pages.length - 1;
 
-    return Scaffold(
-      body: SafeArea(
+    return SafeArea(
+      top: false,
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.58,
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
         child: Column(
           children: [
+            const SizedBox(height: 10),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
             Align(
               alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: TextButton(
-                  onPressed: _finish,
-                  child: Text(l10n.onboardingSkip),
-                ),
+              child: TextButton(
+                onPressed: _finish,
+                child: Text(l10n.onboardingSkip),
               ),
             ),
             Expanded(
@@ -108,33 +139,32 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 itemBuilder: (context, i) {
                   final page = pages[i];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    padding: const EdgeInsets.symmetric(horizontal: 28),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          width: 120,
-                          height: 120,
+                          width: 72,
+                          height: 72,
                           decoration: BoxDecoration(
                             color: page.color.withValues(alpha: 0.12),
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(page.icon, size: 56, color: page.color),
+                          child: Icon(page.icon, size: 32, color: page.color),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 18),
                         Text(
                           page.title,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
+                          style: theme.textTheme.titleLarge
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 8),
                         Text(
                           page.description,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyLarge,
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                         ),
                       ],
                     ),
@@ -148,29 +178,41 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 for (var i = 0; i < pages.length; i++)
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: i == _page ? 22 : 8,
-                    height: 8,
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: i == _page ? 18 : 6,
+                    height: 6,
                     decoration: BoxDecoration(
                       color: i == _page
                           ? pages[_page].color
-                          : Theme.of(context).colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(4),
+                          : theme.colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(3),
                     ),
                   ),
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(24),
-              child: FilledButton(
-                onPressed: isLastPage
-                    ? _finish
-                    : () => _controller.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        ),
-                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-                child: Text(isLastPage ? l10n.onboardingFinish : l10n.onboardingNext),
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
+              child: Row(
+                children: [
+                  if (_page > 0)
+                    TextButton(
+                      onPressed: () => _controller.previousPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      ),
+                      child: Text(l10n.onboardingBack),
+                    ),
+                  const Spacer(),
+                  FilledButton.tonal(
+                    onPressed: isLastPage
+                        ? _finish
+                        : () => _controller.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            ),
+                    child: Text(isLastPage ? l10n.onboardingFinish : l10n.onboardingNext),
+                  ),
+                ],
               ),
             ),
           ],

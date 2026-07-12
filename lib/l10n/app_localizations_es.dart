@@ -525,7 +525,33 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsNotificationsDesc =>
-      'Administra los recordatorios y alertas de la app.';
+      'Activa un recordatorio diario para registrar tus comidas.';
+
+  @override
+  String settingsNotificationsEnabledDesc(String time) {
+    return 'Activado — te recordamos todos los días a las $time';
+  }
+
+  @override
+  String get settingsNotificationsDialogTitle => 'Recordatorio diario';
+
+  @override
+  String get settingsNotificationsToggleLabel =>
+      'Recordarme registrar mis comidas';
+
+  @override
+  String get settingsNotificationsTimeLabel => 'Hora del recordatorio';
+
+  @override
+  String get settingsNotificationsPushTitle => '¿Ya registraste tus comidas?';
+
+  @override
+  String get settingsNotificationsPushBody =>
+      'Abre NutriApp y registra lo que has comido hoy.';
+
+  @override
+  String get settingsNotificationsPermissionDenied =>
+      'No se pudo activar: permite las notificaciones para NutriApp en los ajustes del sistema.';
 
   @override
   String get settingsReplayTutorialDesc =>
@@ -537,6 +563,13 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsExportDataDesc =>
       'Descarga una copia de tu información almacenada en el dispositivo.';
+
+  @override
+  String get settingsExportShareSubject => 'Mis datos de NutriApp';
+
+  @override
+  String get settingsExportFailed =>
+      'No se pudo exportar la información. Intenta de nuevo.';
 
   @override
   String get settingsDeleteAllData => 'Eliminar todos los datos';
@@ -557,6 +590,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsConfirm => 'Confirmar';
+
+  @override
+  String get settingsSave => 'Guardar';
 
   @override
   String get settingsApiKeyTitle => 'Clave de API de IA (Gemini)';
@@ -668,6 +704,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get onboardingWelcomeDialogDecline => 'Ahora no';
+
+  @override
+  String get onboardingBack => 'Atrás';
 
   @override
   String get onboardingSkip => 'Omitir';

@@ -1093,8 +1093,50 @@ abstract class AppLocalizations {
   /// No description provided for @settingsNotificationsDesc.
   ///
   /// In es, this message translates to:
-  /// **'Administra los recordatorios y alertas de la app.'**
+  /// **'Activa un recordatorio diario para registrar tus comidas.'**
   String get settingsNotificationsDesc;
+
+  /// No description provided for @settingsNotificationsEnabledDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Activado — te recordamos todos los días a las {time}'**
+  String settingsNotificationsEnabledDesc(String time);
+
+  /// No description provided for @settingsNotificationsDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Recordatorio diario'**
+  String get settingsNotificationsDialogTitle;
+
+  /// No description provided for @settingsNotificationsToggleLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Recordarme registrar mis comidas'**
+  String get settingsNotificationsToggleLabel;
+
+  /// No description provided for @settingsNotificationsTimeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora del recordatorio'**
+  String get settingsNotificationsTimeLabel;
+
+  /// No description provided for @settingsNotificationsPushTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Ya registraste tus comidas?'**
+  String get settingsNotificationsPushTitle;
+
+  /// No description provided for @settingsNotificationsPushBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Abre NutriApp y registra lo que has comido hoy.'**
+  String get settingsNotificationsPushBody;
+
+  /// No description provided for @settingsNotificationsPermissionDenied.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo activar: permite las notificaciones para NutriApp en los ajustes del sistema.'**
+  String get settingsNotificationsPermissionDenied;
 
   /// No description provided for @settingsReplayTutorialDesc.
   ///
@@ -1113,6 +1155,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Descarga una copia de tu información almacenada en el dispositivo.'**
   String get settingsExportDataDesc;
+
+  /// No description provided for @settingsExportShareSubject.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis datos de NutriApp'**
+  String get settingsExportShareSubject;
+
+  /// No description provided for @settingsExportFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo exportar la información. Intenta de nuevo.'**
+  String get settingsExportFailed;
 
   /// No description provided for @settingsDeleteAllData.
   ///
@@ -1149,6 +1203,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Confirmar'**
   String get settingsConfirm;
+
+  /// No description provided for @settingsSave.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get settingsSave;
 
   /// No description provided for @settingsApiKeyTitle.
   ///
@@ -1359,6 +1419,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Ahora no'**
   String get onboardingWelcomeDialogDecline;
+
+  /// No description provided for @onboardingBack.
+  ///
+  /// In es, this message translates to:
+  /// **'Atrás'**
+  String get onboardingBack;
 
   /// No description provided for @onboardingSkip.
   ///

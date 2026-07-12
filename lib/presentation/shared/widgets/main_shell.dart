@@ -48,9 +48,7 @@ class _MainShellState extends ConsumerState<MainShell> {
 
     if (!mounted) return;
     if (wantsTour == true) {
-      await Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-      );
+      await showOnboardingSheet(context);
     } else {
       final userId = ref.read(currentUserIdProvider);
       if (userId != null) {
