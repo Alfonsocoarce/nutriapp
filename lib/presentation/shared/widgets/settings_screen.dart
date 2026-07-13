@@ -319,10 +319,12 @@ class SettingsScreen extends ConsumerWidget {
         pantryItems: pantryItems,
       );
       if (!context.mounted) return;
+      final box = context.findRenderObject() as RenderBox?;
       await SharePlus.instance.share(ShareParams(
         files: [XFile(file.path, mimeType: 'application/json')],
         subject: l10n.settingsExportShareSubject,
         text: l10n.settingsExportShareSubject,
+        sharePositionOrigin: box == null ? null : (box.localToGlobal(Offset.zero) & box.size),
       ));
     } catch (_) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.settingsExportFailed)));

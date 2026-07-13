@@ -250,6 +250,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get foodLogChooseFromGallery => 'Elegir de la galería';
 
   @override
+  String get foodLogCaptureFailed =>
+      'No se pudo acceder a la cámara o la galería. Revisa los permisos de NutriApp en Ajustes.';
+
+  @override
   String get foodLogAnalyzing => 'Analizando alimento...';
 
   @override

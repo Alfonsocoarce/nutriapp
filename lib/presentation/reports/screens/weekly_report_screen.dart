@@ -42,10 +42,12 @@ class _WeeklyReportScreenState extends ConsumerState<WeeklyReportScreen> {
           );
       ref.invalidate(generatedReportsProvider);
       if (!mounted) return;
+      final box = context.findRenderObject() as RenderBox?;
       await SharePlus.instance.share(ShareParams(
         files: [XFile(file.path, mimeType: 'application/pdf')],
         subject: l10n.reportsShareSubject,
         text: l10n.reportsShareSubject,
+        sharePositionOrigin: box == null ? null : (box.localToGlobal(Offset.zero) & box.size),
       ));
       if (!mounted) return;
       ScaffoldMessenger.of(context)
@@ -145,11 +147,18 @@ class _WeeklyReportScreenState extends ConsumerState<WeeklyReportScreen> {
                                 trailing: IconButton(
                                   icon: const Icon(Icons.share),
                                   tooltip: l10n.reportsShare,
-                                  onPressed: () => SharePlus.instance.share(ShareParams(
-                                    files: [XFile(f.path, mimeType: 'application/pdf')],
-                                    subject: l10n.reportsShareSubject,
-                                    text: l10n.reportsShareSubject,
-                                  )),
+                                  onPressed: () {
+                                    final box =
+                                        context.findRenderObject() as RenderBox?;
+                                    SharePlus.instance.share(ShareParams(
+                                      files: [XFile(f.path, mimeType: 'application/pdf')],
+                                      subject: l10n.reportsShareSubject,
+                                      text: l10n.reportsShareSubject,
+                                      sharePositionOrigin: box == null
+                                          ? null
+                                          : (box.localToGlobal(Offset.zero) & box.size),
+                                    ));
+                                  },
                                 ),
                               ))
                           .toList(),

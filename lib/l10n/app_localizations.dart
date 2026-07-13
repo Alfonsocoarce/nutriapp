@@ -568,6 +568,12 @@ abstract class AppLocalizations {
   /// **'Elegir de la galería'**
   String get foodLogChooseFromGallery;
 
+  /// No description provided for @foodLogCaptureFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo acceder a la cámara o la galería. Revisa los permisos de NutriApp en Ajustes.'**
+  String get foodLogCaptureFailed;
+
   /// No description provided for @foodLogAnalyzing.
   ///
   /// In es, this message translates to:

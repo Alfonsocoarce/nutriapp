@@ -22,8 +22,19 @@ class _FoodLogScreenState extends ConsumerState<FoodLogScreen> {
   _CaptureMode _mode = _CaptureMode.meal;
 
   Future<void> _capture(ImageSource source) async {
+    final l10n = AppLocalizations.of(context)!;
     final picker = ImagePicker();
-    final photo = await picker.pickImage(source: source, imageQuality: 85);
+    final XFile? photo;
+    try {
+      photo = await picker.pickImage(source: source, imageQuality: 85);
+    } catch (error, stackTrace) {
+      debugPrint('Image capture failed: $error\n$stackTrace');
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.foodLogCaptureFailed)));
+      }
+      return;
+    }
     if (photo == null) return;
     await _analyze(photo.path);
   }

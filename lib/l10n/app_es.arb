@@ -87,6 +87,7 @@
   "foodLogTitle": "Registrar comida",
   "foodLogTakePhoto": "Tomar foto",
   "foodLogChooseFromGallery": "Elegir de la galería",
+  "foodLogCaptureFailed": "No se pudo acceder a la cámara o la galería. Revisa los permisos de NutriApp en Ajustes.",
   "foodLogAnalyzing": "Analizando alimento...",
   "foodLogAnalysisResult": "Resultado del análisis",
   "foodLogConfidenceLevel": "Nivel de confianza",
