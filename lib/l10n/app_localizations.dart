@@ -382,6 +382,36 @@ abstract class AppLocalizations {
   /// **'Mejorar rendimiento deportivo'**
   String get goalImprovePerformance;
 
+  /// No description provided for @navDashboard.
+  ///
+  /// In es, this message translates to:
+  /// **'Inicio'**
+  String get navDashboard;
+
+  /// No description provided for @navFoodLog.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrar'**
+  String get navFoodLog;
+
+  /// No description provided for @navPantry.
+  ///
+  /// In es, this message translates to:
+  /// **'Despensa'**
+  String get navPantry;
+
+  /// No description provided for @navReports.
+  ///
+  /// In es, this message translates to:
+  /// **'Resumen'**
+  String get navReports;
+
+  /// No description provided for @navSettings.
+  ///
+  /// In es, this message translates to:
+  /// **'Configuración'**
+  String get navSettings;
+
   /// No description provided for @dashboardTitle.
   ///
   /// In es, this message translates to:

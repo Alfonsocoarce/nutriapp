@@ -91,36 +91,49 @@ class _MainShellState extends ConsumerState<MainShell> {
 
         return Scaffold(
           body: IndexedStack(index: _tabIndex, children: tabs),
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: _tabIndex,
-            onDestinationSelected: (i) => setState(() => _tabIndex = i),
-            destinations: [
-              NavigationDestination(
-                icon: const Icon(Icons.dashboard_outlined),
-                selectedIcon: const Icon(Icons.dashboard),
-                label: l10n.dashboardTitle,
+          bottomNavigationBar: NavigationBarTheme(
+            // 5 destinations with two-word Spanish labels ("Panel
+            // principal", "Resumen semanal") wrap onto a second line at the
+            // default label size, throwing off the centering/consistency
+            // between items — a slightly smaller, standard nav-bar label
+            // size keeps every label on one line and evenly centered under
+            // its icon.
+            data: NavigationBarThemeData(
+              labelTextStyle: WidgetStateProperty.all(
+                const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
               ),
-              NavigationDestination(
-                icon: const Icon(Icons.camera_alt_outlined),
-                selectedIcon: const Icon(Icons.camera_alt),
-                label: l10n.foodLogTitle,
-              ),
-              NavigationDestination(
-                icon: const Icon(Icons.kitchen_outlined),
-                selectedIcon: const Icon(Icons.kitchen),
-                label: l10n.pantryTitle,
-              ),
-              NavigationDestination(
-                icon: const Icon(Icons.summarize_outlined),
-                selectedIcon: const Icon(Icons.summarize),
-                label: l10n.reportsTitle,
-              ),
-              NavigationDestination(
-                icon: const Icon(Icons.settings_outlined),
-                selectedIcon: const Icon(Icons.settings),
-                label: l10n.settingsTitle,
-              ),
-            ],
+            ),
+            child: NavigationBar(
+              selectedIndex: _tabIndex,
+              onDestinationSelected: (i) => setState(() => _tabIndex = i),
+              destinations: [
+                NavigationDestination(
+                  icon: const Icon(Icons.dashboard_outlined),
+                  selectedIcon: const Icon(Icons.dashboard),
+                  label: l10n.navDashboard,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.camera_alt_outlined),
+                  selectedIcon: const Icon(Icons.camera_alt),
+                  label: l10n.navFoodLog,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.kitchen_outlined),
+                  selectedIcon: const Icon(Icons.kitchen),
+                  label: l10n.navPantry,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.summarize_outlined),
+                  selectedIcon: const Icon(Icons.summarize),
+                  label: l10n.navReports,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.settings_outlined),
+                  selectedIcon: const Icon(Icons.settings),
+                  label: l10n.navSettings,
+                ),
+              ],
+            ),
           ),
         );
       },

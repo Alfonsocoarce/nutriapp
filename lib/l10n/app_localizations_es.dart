@@ -155,6 +155,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get goalImprovePerformance => 'Mejorar rendimiento deportivo';
 
   @override
+  String get navDashboard => 'Inicio';
+
+  @override
+  String get navFoodLog => 'Registrar';
+
+  @override
+  String get navPantry => 'Despensa';
+
+  @override
+  String get navReports => 'Resumen';
+
+  @override
+  String get navSettings => 'Configuración';
+
+  @override
   String get dashboardTitle => 'Panel principal';
 
   @override

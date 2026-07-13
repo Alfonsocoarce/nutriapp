@@ -53,6 +53,12 @@
   "goalReduceBodyFat": "Reducir grasa corporal",
   "goalImprovePerformance": "Mejorar rendimiento deportivo",
 
+  "navDashboard": "Inicio",
+  "navFoodLog": "Registrar",
+  "navPantry": "Despensa",
+  "navReports": "Resumen",
+  "navSettings": "Configuración",
+
   "dashboardTitle": "Panel principal",
   "dashboardCaloriesConsumed": "Calorías consumidas",
   "dashboardCaloriesRemaining": "Calorías restantes",
