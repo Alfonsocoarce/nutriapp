@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/security/notification_preferences_store.dart';
 import '../../../data/local/app_database.dart';
@@ -121,7 +122,24 @@ class SettingsScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.settingsApiKeyDialogDescription),
+            Text(l10n.settingsApiKeyDialogIntro),
+            const SizedBox(height: 6),
+            InkWell(
+              onTap: () => launchUrl(
+                Uri.parse('https://aistudio.google.com/app/apikey'),
+                mode: LaunchMode.externalApplication,
+              ),
+              child: Text(
+                l10n.settingsApiKeyDialogLinkLabel,
+                style: TextStyle(
+                  color: Theme.of(ctx).colorScheme.primary,
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(l10n.settingsApiKeyDialogOutro),
             const SizedBox(height: 16),
             TextField(
               controller: controller,

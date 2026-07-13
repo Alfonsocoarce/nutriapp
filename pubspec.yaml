@@ -74,6 +74,9 @@ dependencies:
   uuid: ^4.5.1
   share_plus: ^12.0.2
 
+  # Opening external links (e.g. the Gemini API key page) in the browser
+  url_launcher: ^6.3.1
+
   # Local (on-device, no push server) daily reminder notifications
   flutter_local_notifications: ^18.0.1
   timezone: ^0.9.4

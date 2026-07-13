@@ -606,8 +606,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsApiKeyDialogTitle => 'Clave de API de Gemini';
 
   @override
-  String get settingsApiKeyDialogDescription =>
-      'NutriApp usa Gemini Vision para identificar alimentos en tus fotos. Obtén una clave gratuita en aistudio.google.com/app/apikey y pégala aquí. Se guarda cifrada una sola vez en este dispositivo y la usan automáticamente todas las cuentas que inicien sesión en él — no es necesario repetir este paso por cada cuenta, solo una vez por dispositivo (por ejemplo, una vez en tu teléfono Android y una vez en tu iPhone).';
+  String get settingsApiKeyDialogIntro =>
+      'NutriApp usa Gemini Vision para identificar alimentos en tus fotos. Obtén una clave gratuita en:';
+
+  @override
+  String get settingsApiKeyDialogLinkLabel => 'aistudio.google.com/app/apikey';
+
+  @override
+  String get settingsApiKeyDialogOutro =>
+      'Pégala aquí. Se guarda cifrada una sola vez en este dispositivo.';
 
   @override
   String get settingsApiKeyFieldLabel => 'Clave de API';
