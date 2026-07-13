@@ -1,143 +1,140 @@
 # NutriApp
 
-Aplicación móvil de nutrición inteligente (Android + iOS) construida en **Flutter**, con
-reconocimiento de alimentos por foto vía **IA generativa (Google Gemini Vision)**, despensa
-inteligente con extracción automática de facturas, reportes semanales con recomendaciones
-generadas por IA, y arquitectura **Local-First**: los datos del usuario viven cifrados en el
-dispositivo, la red se usa únicamente para las llamadas a los modelos de IA.
+A cross-platform (Android + iOS) nutrition app built with **Flutter**, featuring AI-powered food
+recognition from photos (**Google Gemini Vision**), a smart pantry that auto-fills from grocery
+receipts, weekly reports with AI-generated recommendations, and a **Local-First** architecture:
+user data lives encrypted on-device, network access is used only for the AI calls.
 
-Interfaz completamente en español. Especificación funcional completa en [docs/ERS.md](docs/ERS.md).
+The app's UI is entirely in Spanish (its target users). Full functional spec in
+[docs/ERS.md](docs/ERS.md).
 
-## Qué resuelve
+## Problem it solves
 
-Llevar un registro nutricional preciso es tedioso: pesar comida, buscar cada ingrediente en una
-base de datos, y llevar cuenta manual de la despensa. NutriApp usa modelos de visión de IA para
-que una sola foto —de un plato de comida, de una etiqueta nutricional, o de una factura del
-supermercado— reemplace ese trabajo manual, sin depender de un backend propio ni de bases de datos
-de alimentos precargadas.
+Keeping an accurate nutrition log is tedious: weighing food, looking up every ingredient in a
+database, and manually tracking a kitchen pantry. NutriApp uses AI vision models so that a single
+photo — of a plate of food, a printed nutrition label, or a grocery receipt — replaces that manual
+work, without relying on a custom backend or a preloaded food database.
 
-## Funcionalidad principal
+## Core features
 
-- **Registro de comidas por foto**: identifica el platillo, sus componentes individuales y estima
-  calorías/proteína/carbohidratos/grasas por porción. Cuando la confianza del resultado es baja,
-  la app explica qué hacer para mejorar la foto en vez de mostrar datos poco confiables o vacíos.
-- **Reconocimiento de etiquetas nutricionales impresas**, como modo alterno para productos
-  empacados.
-- **Despensa inteligente**: alta manual o mediante foto/PDF de una factura de supermercado, con
-  extracción de texto real (sin OCR de terceros) y una pantalla de revisión antes de guardar.
-  Filtra automáticamente productos no comestibles (limpieza, higiene, etc.).
-- **Dashboard diario** de calorías y macronutrientes frente a la meta del usuario.
-- **Resumen semanal** con gráficos, alimentos más consumidos, recomendaciones nutricionales
-  generadas por IA (con una alternativa basada en reglas si la IA no responde), y un
-  **planificador de comidas de 3 días** que prioriza lo que ya hay en la despensa — todo
-  exportable a PDF y compartible por WhatsApp/Gmail.
-- **Recordatorios diarios** programados en el sistema operativo (sin servidor de notificaciones
-  push) y **exportación de datos del usuario** a JSON.
-- Registro/inicio de sesión local (correo/contraseña), sin dependencias externas.
+- **Photo-based meal logging**: identifies the dish, its individual components, and estimates
+  calories/protein/carbs/fat per portion. When the result's confidence is low, the app explains
+  what to do to get a better photo instead of showing unreliable or blank data.
+- **Printed nutrition label recognition**, as an alternate mode for packaged products.
+- **Smart pantry**: added manually or from a photo/PDF of a grocery receipt, with real text
+  extraction (no third-party OCR) and a review screen before saving. Automatically filters out
+  non-food items (cleaning supplies, toiletries, etc.).
+- **Daily dashboard** of calories and macronutrients against the user's goal.
+- **Weekly summary** with charts, most-consumed foods, AI-generated nutrition recommendations
+  (with a rule-based fallback if the AI is unavailable), and a **3-day meal planner** that
+  prioritizes what's already in the pantry — all exportable to a shareable PDF (WhatsApp, Gmail,
+  etc.).
+- **Daily reminders** scheduled on-device (no push notification server) and **user data export**
+  to JSON.
+- Local sign-up/login (email/password), no external auth dependency.
 
-## Decisiones técnicas destacables
+## Notable technical decisions
 
-- **Local-First real, no solo de nombre**: la base de datos (SQLite + SQLCipher, AES-256) vive
-  cifrada en el dispositivo; la clave se guarda en Keychain (iOS) / Keystore (Android). La única
-  llamada de red es hacia el proveedor de IA, y la clave de ese proveedor la aporta cada usuario
-  desde Configuración — nunca vive en el código fuente ni en el repositorio.
-- **Ingeniería de prompts orientada a confiabilidad**: el prompt de reconocimiento de alimentos
-  fuerza un proceso de identificación explícito en pasos (escala de referencia → peso estimado →
-  cálculo nutricional → autoevaluación de confianza), en vez de pedirle directamente un resultado
-  al modelo. Cuando el modelo no puede identificar algo con certeza, la respuesta lo declara en vez
-  de inventar un valor — y le indica al usuario cómo tomar una mejor foto.
-- **Interfaces de servicio, no llamadas directas**: `FoodRecognitionService`,
-  `InvoiceParsingService` y `AuthRepository` son interfaces de dominio con una implementación real
-  intercambiable (Gemini, CSU/Automercado, auth local). Cambiar de proveedor de IA, mover la
-  llamada detrás de un backend propio, o agregar un proveedor de login externo es un cambio de una
-  sola clase — ver [Extender la aplicación](#extender-la-aplicación).
-- **Salidas estructuradas de IA** (`responseSchema` de Gemini) en vez de parseo de texto libre,
-  para que el resultado de cada llamada sea JSON validable de forma determinista.
+- **Local-First in practice, not just in name**: the database (SQLite + SQLCipher, AES-256) lives
+  encrypted on the device; the key is stored in the platform Keychain (iOS) / Keystore (Android).
+  The only network call is to the AI provider, and each user supplies their own key for it from
+  Settings — it never lives in source code or in the repository.
+- **Prompt engineering for reliability**: the food-recognition prompt forces an explicit
+  step-by-step identification process (reference scale → estimated weight → nutrition calculation
+  → confidence self-assessment) instead of asking the model directly for a result. When the model
+  can't identify something with confidence, the response says so explicitly instead of guessing —
+  and tells the user how to take a better photo.
+- **Service interfaces, not direct calls**: `FoodRecognitionService`, `InvoiceParsingService`, and
+  `AuthRepository` are domain-level interfaces with a swappable concrete implementation (Gemini,
+  a specific grocery chain's receipt format, local auth). Switching AI providers, moving the call
+  behind a proper backend, or adding an external login provider is a single-class change — see
+  [Extending the app](#extending-the-app).
+- **Structured AI output** (Gemini `responseSchema`) instead of free-text parsing, so every call's
+  result is deterministically validatable JSON.
 
-## Arquitectura
+## Architecture
 
-Clean Architecture con separación estricta de capas:
+Clean Architecture with strict layer separation:
 
 ```
 lib/
-├── domain/         # Entidades y reglas de negocio puras — sin dependencias de Flutter ni de red
+├── domain/         # Pure entities and business rules — no Flutter or network dependencies
 │   ├── entities/
-│   ├── repositories/   # Interfaces (contratos), sin implementación
+│   ├── repositories/   # Interfaces (contracts), no implementation
 │   └── usecases/
-├── data/           # Implementaciones concretas de los contratos del dominio
-│   ├── local/          # Esquema SQLCipher
+├── data/           # Concrete implementations of the domain contracts
+│   ├── local/          # SQLCipher schema
 │   ├── repositories/
-│   └── services/        # Gemini Vision, parseo de facturas, exportación, generación de PDF
-├── presentation/   # UI y estado (Riverpod), organizada por feature
+│   └── services/        # Gemini Vision, receipt parsing, data export, PDF generation
+├── presentation/   # UI and state (Riverpod), organized by feature
 │   ├── auth/ dashboard/ food_log/ pantry/ profile/ reports/ settings/ onboarding/
-├── core/           # Theming, seguridad, notificaciones, localización, errores
-└── l10n/           # Strings en español (ARB), generadas por flutter gen-l10n
+├── core/           # Theming, security, notifications, localization, error types
+└── l10n/           # Spanish UI strings (ARB), generated via flutter gen-l10n
 ```
 
-**Stack**: Flutter/Dart · Riverpod (estado) · `go_router` (navegación) · SQLite + SQLCipher
-(persistencia cifrada) · `flutter_secure_storage` (Keychain/Keystore) · Gemini Vision API ·
+**Stack**: Flutter/Dart · Riverpod (state) · `go_router` (navigation) · SQLite + SQLCipher
+(encrypted persistence) · `flutter_secure_storage` (Keychain/Keystore) · Gemini Vision API ·
 `flutter_local_notifications` · Syncfusion PDF · `fl_chart`.
 
-~9.000 líneas de Dart en `lib/`, 8 suites de test / 54 tests unitarios y de widgets.
+~9,000 lines of Dart in `lib/`, 8 test suites / 54 unit and widget tests.
 
-## Capturas
+## Screenshots
 
-*(agregar aquí 2-3 capturas de pantalla del dashboard, el registro de comida por foto, y el
-resumen semanal — recomendado antes de compartir el repositorio públicamente)*
+*(add 2-3 screenshots here — dashboard, photo-based meal logging, weekly summary — recommended
+before sharing this repository publicly)*
 
-## Ejecutar el proyecto
+## Running the project
 
-Requisitos: Flutter 3.44+, Xcode con simulador iOS, Android SDK con `ANDROID_HOME` configurado y
-un AVD creado.
+Requirements: Flutter 3.44+, Xcode with the iOS simulator, Android SDK with `ANDROID_HOME`
+configured and an AVD created.
 
 ```bash
 flutter pub get
-flutter gen-l10n     # regenerar strings si se edita lib/l10n/app_es.arb
-flutter run          # elige el simulador/emulador activo, o usa -d <device-id>
+flutter gen-l10n     # regenerate strings after editing lib/l10n/app_es.arb
+flutter run          # picks the active simulator/emulator, or use -d <device-id>
 ```
 
-Verificación:
+Verification:
 
 ```bash
 flutter analyze
 flutter test
 ```
 
-### Activar el reconocimiento de fotos (1 minuto)
+### Enabling photo recognition (1 minute)
 
-El reconocimiento por foto requiere una clave de API gratuita propia de Google Gemini:
+Photo-based recognition requires a free personal Google Gemini API key:
 
-1. Ir a **aistudio.google.com/app/apikey**, iniciar sesión con una cuenta de Google y crear una
-   clave (gratuita dentro del nivel gratuito).
-2. Abrir NutriApp → **Configuración** → **Clave de API de IA (Gemini)** → pegar la clave.
-   Se guarda cifrada únicamente en el dispositivo.
-3. Listo — "Registrar comida" → "Tomar foto" ya identifica el alimento y calcula la información
-   nutricional.
+1. Go to **aistudio.google.com/app/apikey**, sign in with a Google account, and create a key
+   (free within the free tier).
+2. Open NutriApp → **Settings** → **AI API Key (Gemini)** → paste the key.
+   It's stored encrypted on-device only.
+3. Done — "Log meal" → "Take photo" now identifies the food and calculates its nutrition info.
 
-## Extender la aplicación
+## Extending the app
 
-**Cambiar de proveedor de IA o mover la llamada detrás de un backend propio**
-(recomendado antes de publicar en tiendas, para que ninguna clave viva en el cliente móvil):
-implementar `FoodRecognitionService`
+**Switch AI providers, or move the call behind a proper backend**
+(recommended before a store release, so no key ships in the mobile client):
+implement `FoodRecognitionService`
 ([lib/data/services/food_recognition_service.dart](lib/data/services/food_recognition_service.dart))
-y actualizar `foodRecognitionServiceProvider` en
+and update `foodRecognitionServiceProvider` in
 [lib/presentation/food_log/providers/food_log_providers.dart](lib/presentation/food_log/providers/food_log_providers.dart).
 
-**Soportar facturas de otro supermercado o con OCR real** (fotos en vez de PDF con texto):
-implementar `InvoiceParsingService`
+**Support receipts from another store, or real OCR** (photos instead of a text-based PDF):
+implement `InvoiceParsingService`
 ([lib/data/services/invoice_parsing_service.dart](lib/data/services/invoice_parsing_service.dart))
-y actualizar `invoiceParsingServiceProvider` en
+and update `invoiceParsingServiceProvider` in
 [lib/presentation/pantry/providers/pantry_providers.dart](lib/presentation/pantry/providers/pantry_providers.dart).
-`CsuInvoiceParsingService` hoy solo reconoce el formato de Supermercados Unidos/CSU/Automercado.
+`CsuInvoiceParsingService` currently only recognizes one grocery chain's electronic receipt format.
 
-**Agregar login con Google/Microsoft**: implementar `AuthRepository`
+**Add Google/Microsoft login**: implement `AuthRepository`
 ([lib/domain/repositories/auth_repository.dart](lib/domain/repositories/auth_repository.dart))
-contra Firebase/Supabase u otro proveedor, y actualizar `authRepositoryProvider` en
+against Firebase/Supabase or another provider, and update `authRepositoryProvider` in
 [lib/presentation/auth/providers/auth_providers.dart](lib/presentation/auth/providers/auth_providers.dart).
 
-## Alcance y limitaciones conocidas
+## Scope and known limitations
 
-Fuera de alcance por decisión de producto, no por limitación técnica: escáner de código de
-barras, asistente conversacional de nutrición. Documentado pero no implementado (ver
-`docs/ERS.md`, sección 9): OCR de facturas fotografiadas de otros formatos, proxy backend para
-uso multiusuario a escala, inicio de sesión con Google/Microsoft.
+Out of scope by product decision, not a technical limitation: barcode scanning, a conversational
+nutrition assistant. Documented but not yet implemented (see `docs/ERS.md`, section 9): OCR for
+photographed receipts or other store formats, a backend proxy for multi-user scale, Google/
+Microsoft login.

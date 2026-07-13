@@ -1,294 +1,295 @@
-# Especificación de Requerimientos del Software (ERS)
+# Software Requirements Specification (SRS)
 
-## NutriApp — Aplicación Móvil Inteligente de Nutrición y Planificación Alimentaria con Inteligencia Artificial
+## NutriApp — AI-Powered Smart Nutrition & Meal Planning Mobile App
 
-### Plataforma
+### Platform
 - Android
 - iOS
 
-### Idioma
-Toda la interfaz, textos, notificaciones, mensajes de error y configuración de la aplicación
-estarán en **español**.
+### Language
+The entire interface, copy, notifications, error messages, and app configuration are in
+**Spanish** (the target user base).
 
 ---
 
-## 1. Objetivo General
+## 1. General Objective
 
-Desarrollar una aplicación móvil para Android e iOS que utilice Inteligencia Artificial para ayudar
-a los usuarios a mejorar su alimentación mediante el análisis de fotografías de alimentos, el
-cálculo automático de calorías y nutrientes, la administración de la despensa del hogar y la
-generación de planes alimenticios personalizados basados en evidencia científica.
+Develop a mobile app for Android and iOS that uses Artificial Intelligence to help users improve
+their diet by analyzing photos of food, automatically calculating calories and nutrients, managing
+a household pantry, and generating personalized, evidence-based meal plans.
 
-La aplicación deberá funcionar bajo un enfoque **Local First**, almacenando toda la información
-del usuario en el dispositivo y utilizando Internet únicamente cuando sea necesario para funciones
-de Inteligencia Artificial o respaldo opcional.
+The app follows a **Local-First** approach: all user data is stored on-device, and the internet is
+used only when required for AI features or optional backup.
 
-## 2. Requerimientos Funcionales
+## 2. Functional Requirements
 
-### RF-01 Registro e Inicio de Sesión
+### FR-01 Registration and Login
 
-- Registrarse mediante correo electrónico.
-- Iniciar sesión con Google.
-- Iniciar sesión con Microsoft (Outlook, Hotmail, Live u Office 365).
-- Recuperar contraseña.
-- Mantener la sesión iniciada.
-- Cerrar sesión.
+- Sign up via email.
+- Sign in with Google.
+- Sign in with Microsoft (Outlook, Hotmail, Live, or Office 365).
+- Password recovery.
+- Persistent session.
+- Log out.
 
-> **Nota de implementación (fase MVP):** el inicio de sesión con Google/Microsoft requiere cuentas
-> de proveedor externas (Firebase/Supabase) que aún no están configuradas. La primera versión
-> implementa únicamente registro/inicio de sesión local con correo y contraseña (almacenados de
-> forma cifrada en el dispositivo, sin conexión). El acceso mediante Google/Microsoft queda
-> documentado como fase posterior detrás de una interfaz `AuthService` intercambiable.
+> **Implementation note (MVP phase):** Google/Microsoft login requires external provider accounts
+> (Firebase/Supabase) that aren't set up yet. The first version implements only local email/
+> password registration and login (encrypted on-device, offline). Google/Microsoft access is
+> documented as a later phase behind a swappable `AuthService` interface.
 
-### RF-02 Perfil del Usuario
+### FR-02 User Profile
 
-Nombre, fecha de nacimiento, sexo, estatura, peso actual, peso objetivo, nivel de actividad física,
-objetivo nutricional, restricciones alimentarias, alergias, enfermedades (opcional).
+Name, date of birth, sex, height, current weight, target weight, activity level, nutrition goal,
+dietary restrictions, allergies, medical conditions (optional).
 
-### RF-03 Objetivos Nutricionales
+### FR-03 Nutrition Goals
 
-Perder peso, aumentar masa muscular, mantener peso, reducir colesterol, controlar diabetes, regular
-azúcar, alimentación saludable, reducir grasa corporal, mejorar rendimiento deportivo.
+Lose weight, gain muscle mass, maintain weight, lower cholesterol, manage diabetes, regulate blood
+sugar, eat healthier, reduce body fat, improve athletic performance.
 
-### RF-04 Captura de Fotografías
+### FR-04 Photo Capture
 
-Tomar fotografías desde la cámara, seleccionar desde la galería, analizar varias fotografías
-consecutivas.
+Take photos with the camera, pick from the gallery, analyze several consecutive photos.
 
-### RF-05 Identificación Automática de Alimentos
+### FR-05 Automatic Food Identification
 
-La IA identificará: nombre del alimento, ingredientes, método de cocción, peso aproximado,
-cantidad estimada, número de porciones y **nivel de confianza** de la identificación.
+The AI identifies: food name, ingredients, cooking method, approximate weight, estimated quantity,
+number of servings, and the **confidence level** of the identification.
 
-> **Principio de integridad de datos:** cuando la IA no pueda determinar un dato con confianza
-> suficiente, la aplicación debe mostrarlo explícitamente como "no disponible" en vez de asumir un
-> valor (p. ej. no rellenar micronutrientes faltantes con cero). Es preferible mostrar un vacío que
-> un dato incorrecto.
+> **Data integrity principle:** when the AI can't determine a value with sufficient confidence,
+> the app must show it explicitly as "not available" instead of assuming a value (e.g., not
+> filling in missing micronutrients with zero). Showing a blank is preferable to showing an
+> incorrect value.
 >
-> **Nota de implementación:** implementado de forma **real** (no simulada) con **Google Gemini
-> Vision** (`GeminiFoodRecognitionService`). El usuario ingresa su propia clave de API gratuita
-> (obtenida en aistudio.google.com/app/apikey) en Configuración; se guarda cifrada solo en el
-> dispositivo (`ApiKeyStore`) y nunca se incluye en el código fuente ni en el binario compilado. La
-> app llama directamente a la API de Gemini por HTTPS con esa clave, usando salida estructurada
-> (JSON Schema) para obtener nombre del alimento, ingredientes, método de cocción, peso estimado,
-> porciones, nivel de confianza y los valores nutricionales de RF-06 en una sola llamada. Los campos
-> que el modelo no pueda determinar se devuelven como `null`, respetando el principio de integridad
-> de datos. El modelo usado es el alias `gemini-flash-lite-latest` (no una versión fija como
-> `gemini-2.5-flash`): los alias "latest" siguen apuntando al modelo vigente cuando Google retira
-> versiones antiguas del nivel gratuito, y la variante "lite" demostró tener más margen de cuota
-> gratuita que el alias `gemini-flash-latest` completo durante las pruebas. Verificado con una foto
-> real de un plato de comida: identificó correctamente el alimento y sus componentes con nivel de
-> confianza alto.
+> **Implementation note:** implemented for **real** (not mocked) with **Google Gemini Vision**
+> (`GeminiFoodRecognitionService`). The user enters their own free API key (obtained at
+> aistudio.google.com/app/apikey) in Settings; it's stored encrypted on-device only
+> (`ApiKeyStore`) and is never included in source code or the compiled binary. The app calls the
+> Gemini API directly over HTTPS with that key, using structured output (JSON Schema) to get the
+> food name, ingredients, cooking method, estimated weight, servings, confidence level, and the
+> FR-06 nutrition values in a single call. Fields the model can't determine are returned as
+> `null`, honoring the data integrity principle above. The model used is the `gemini-flash-lite-
+> latest` alias (not a pinned version like `gemini-2.5-flash`): "latest" aliases keep pointing at
+> the current model as Google retires older free-tier versions, and the "lite" variant showed more
+> free-quota headroom than the full `gemini-flash-latest` alias during testing. Verified with a
+> real photo of a plate of food: it correctly identified the dish and its components with high
+> confidence.
 >
-> **Nota de seguridad:** para una app publicada en tiendas con múltiples usuarios, la recomendación
-> de Sección 3 (proxy backend sin estado) sigue siendo la correcta — evita exponer cualquier clave
-> compartida. Como cada usuario aquí aporta su propia clave personal (con su propia cuota gratuita),
-> el riesgo de extraerla del dispositivo se limita a esa cuenta individual, no a infraestructura
-> compartida; es un tradeoff aceptable para uso personal/local-first mientras no haya una cuenta de
-> nube propia del proyecto.
+> **Security note:** for a store-published app with many users, the Section 3 recommendation (a
+> stateless backend proxy) is still the right call — it avoids exposing any shared key. Since each
+> user here supplies their own personal key (with their own free quota), the risk of extracting it
+> from the device is limited to that individual's account, not shared infrastructure — an
+> acceptable tradeoff for personal/local-first use while there's no project-owned cloud account.
 
-### RF-06 Información Nutricional
+### FR-06 Nutrition Information
 
-Calorías, proteínas, carbohidratos, grasas, grasas saturadas, grasas trans, fibra, azúcares, sodio,
-colesterol, vitaminas principales, minerales principales. Mostrada mediante tarjetas visuales,
-tabla nutricional y gráficos simples. Aplica el mismo principio de integridad de datos de RF-05.
+Calories, protein, carbohydrates, fat, saturated fat, trans fat, fiber, sugars, sodium,
+cholesterol, key vitamins, key minerals. Shown via visual cards, a nutrition table, and simple
+charts. Follows the same data integrity principle as FR-05.
 
-### RF-07 Registro Automático
+### FR-07 Automatic Logging
 
-Cada fotografía se almacena junto con fecha, hora, imagen, tipo de comida e información nutricional.
+Each photo is stored along with date, time, image, meal type, and nutrition information.
 
-### RF-08 Clasificación Automática
+### FR-08 Automatic Classification
 
-Desayuno, merienda mañana, almuerzo, merienda tarde, cena, bebida, postre. El usuario puede
-modificar la clasificación.
+Breakfast, morning snack, lunch, afternoon snack, dinner, drink, dessert. The user can edit the
+classification.
 
-### RF-09 Escaneo de Facturas
+### FR-09 Receipt Scanning
 
-Carga de facturas impresas, electrónicas o fotografiadas. La IA extrae producto, cantidad, unidad,
-fecha y precio (opcional).
+Upload printed, electronic, or photographed receipts. The AI extracts product, quantity, unit,
+date, and price (optional).
 
-> **Nota de implementación (fase MVP):** implementado de forma **real** (no simulada) para facturas
-> electrónicas en **PDF** con capa de texto — específicamente el formato "Tiquete Electrónico" de
-> Corporación Supermercados Unidos (CSU/Automercado). `CsuInvoiceParsingService` extrae el texto
-> del PDF con `syncfusion_flutter_pdf` (Dart puro, sin código nativo ni servicios externos) y
-> reconoce cada línea de producto (código, cantidad, descripción, precio) por expresión regular,
-> asignando una categoría de despensa mediante un diccionario de palabras clave
-> (`InvoiceCategoryGuesser`). El usuario revisa y corrige cada producto antes de guardarlo —mismo
-> principio de "no adivinar" que RF-05. Otros formatos de factura (fotografía, otros supermercados)
-> requieren una nueva implementación de `InvoiceParsingService` (posiblemente con OCR/IA detrás de
-> un proxy) intercambiable en el mismo punto de extensión.
+> **Implementation note (MVP phase):** implemented for **real** (not mocked) for electronic
+> receipts in **PDF** format with a text layer — specifically the "Tiquete Electrónico" format
+> used by Corporación Supermercados Unidos (CSU/Automercado, a Costa Rican grocery chain).
+> `CsuInvoiceParsingService` extracts the PDF's text with `syncfusion_flutter_pdf` (pure Dart, no
+> native code or external services) and parses each product line (code, quantity, description,
+> price) via regular expression, assigning a pantry category through a keyword dictionary
+> (`InvoiceCategoryGuesser`). The user reviews and corrects each product before saving — the same
+> "don't guess" principle as FR-05. Other receipt formats (photographed receipts, other stores)
+> require a new `InvoiceParsingService` implementation (possibly OCR/AI behind a proxy),
+> swappable at the same extension point.
 
-### RF-10 Registro Manual de Compras
+### FR-10 Manual Purchase Logging
 
-Producto, cantidad, unidad, fecha de compra, fecha de vencimiento — vía factura o ingreso manual.
+Product, quantity, unit, purchase date, expiration date — via receipt or manual entry.
 
-### RF-11 Despensa Inteligente
+### FR-11 Smart Pantry
 
-Categorías: frutas, vegetales, carnes, pescados, mariscos, lácteos, cereales, legumbres, snacks,
-bebidas, congelados, condimentos. Cada producto muestra cantidad disponible, fecha de compra, fecha
-de vencimiento y días restantes.
+Categories: fruits, vegetables, meats, fish, seafood, dairy, cereals, legumes, snacks, beverages,
+frozen foods, condiments. Each product shows available quantity, purchase date, expiration date,
+and days remaining.
 
-### RF-12 Planificador Inteligente
+### FR-12 Smart Planner
 
-Genera plan diario y semanal usando objetivos, despensa, restricciones, preferencias, historial y
-calorías restantes.
+Generates a daily and weekly plan using goals, pantry contents, restrictions, preferences, history,
+and remaining calories.
 
-> **Adiciones (basadas en análisis de aplicaciones comparables):**
-> - **Recetas recursivas/composables**: una receta puede estar compuesta por otras recetas (p. ej.
->   un pastel = receta de masa + receta de relleno), agregando la información nutricional de forma
->   recursiva hacia arriba.
-> - **Duplicar día**: el usuario puede copiar todas las comidas de un día a otra fecha (pasada o
->   futura), agilizando la planificación semanal repetitiva.
+> **Additions (based on comparable-app research):**
+> - **Recursive/composable recipes**: a recipe can be composed of other recipes (e.g., a cake =
+>   dough recipe + filling recipe), rolling up nutrition information recursively.
+> - **Duplicate day**: the user can copy an entire day's meals to another date (past or future),
+>   speeding up repetitive weekly planning.
 
-### RF-13 Recomendación de Porciones
+### FR-13 Portion Recommendations
 
-Proteína, carbohidratos, vegetales y grasas saludables, ajustadas según edad, sexo, peso, estatura,
-nivel de actividad y objetivo.
+Protein, carbohydrates, vegetables, and healthy fats, adjusted for age, sex, weight, height,
+activity level, and goal.
 
-### RF-14 Recomendaciones Inteligentes
+### FR-14 Smart Recommendations
 
-Consumir más proteína, reducir azúcar, reducir sodio, incrementar fibra, aumentar vegetales, reducir
-grasas saturadas, utilizar alimentos próximos a vencer.
+Eat more protein, reduce sugar, reduce sodium, increase fiber, eat more vegetables, reduce
+saturated fat, use ingredients that are about to expire.
 
-### RF-15 Asistente Nutricional
+### FR-15 Nutrition Assistant
 
-Consultas en lenguaje natural (¿qué puedo cocinar?, ¿qué puedo desayunar/cenar?, ¿puedo comer esto?,
-¿qué alimento tiene más proteína?, ¿cómo alcanzo mi meta?) usando inventario, historial, objetivos y
-calorías disponibles.
+Natural-language queries (what can I cook?, what can I have for breakfast/dinner?, can I eat this?,
+which food has more protein?, how do I reach my goal?) using inventory, history, goals, and
+available calories.
 
-### RF-16 Escáner de Código de Barras
+### FR-16 Barcode Scanner
 
-Información nutricional, ingredientes, alérgenos y tamaño de porción.
+Nutrition information, ingredients, allergens, and serving size.
 
-### RF-17 Panel Principal
+### FR-17 Main Dashboard
 
-Calorías consumidas/restantes, proteína, carbohidratos, grasas, agua, objetivo diario, progreso,
-peso actual.
+Calories consumed/remaining, protein, carbs, fat, water, daily goal, progress, current weight.
 
-### RF-18 Resumen Semanal
+### FR-18 Weekly Summary
 
-Reporte automático de lunes 12:00 a.m. a domingo 5:00 p.m.: totales de calorías, proteínas,
-carbohidratos, grasas, fibra, azúcar, sodio, colesterol, cantidad de comidas, distribución por
-categorías y cumplimiento de objetivos.
+Automatic report from Monday 12:00 a.m. to Sunday 5:00 p.m.: totals for calories, protein, carbs,
+fat, fiber, sugar, sodium, cholesterol, number of meals, category breakdown, and goal adherence.
 
-### RF-19 Estadísticas
+### FR-19 Statistics
 
-Consumo diario, semanal, mensual; evolución del peso; macronutrientes; cumplimiento de metas.
+Daily, weekly, monthly consumption; weight trend; macronutrients; goal adherence.
 
-### RF-20 Exportación
+### FR-20 Export
 
 PDF, Excel, CSV.
 
-> **Nota de implementación:** documentar el formato de exportación (esquema de columnas/campos) en
-> `docs/export-format.md` antes de implementar, para que no varíe entre versiones.
+> **Implementation note:** the weekly report exports to **PDF** (`WeeklyReportPdfService`,
+> shareable via WhatsApp/Gmail/etc.). A full raw data export (profile, meal history, pantry) to
+> **JSON** is also implemented (`DataExportService`, Settings → "Export data"). Excel/CSV export
+> is not implemented.
 
-### RF-21 Notificaciones
+### FR-21 Notifications
 
-Registrar comidas, beber agua, comer, comprar alimentos, consumir alimentos próximos a vencer,
-consultar el resumen semanal.
+Log meals, drink water, eat, buy groceries, use ingredients about to expire, check the weekly
+summary.
 
-### RF-22 Historial
+> **Implementation note:** implemented as a single configurable **daily reminder** (time chosen by
+> the user in Settings), scheduled on-device via `flutter_local_notifications` — no push
+> notification server involved. The more granular per-event notifications listed above (water,
+> expiring ingredients, etc.) are not implemented.
 
-Fotografías, planes, reportes, peso, objetivos, estadísticas.
+### FR-22 History
 
-### RF-23 Configuración
+Photos, plans, reports, weight, goals, statistics.
 
-Editar perfil, cambiar objetivo, cambiar idioma, activar/desactivar notificaciones, exportar
-información, eliminar todos los datos, cerrar sesión.
+### FR-23 Settings
 
-## 3. Requerimientos de Inteligencia Artificial
+Edit profile, change goal, change language, enable/disable notifications, export data, delete all
+data, log out.
 
-- Identificar alimentos mediante fotografías.
-- Estimar porciones.
-- Calcular calorías y macronutrientes; micronutrientes cuando sea posible.
-- Recomendar porciones y generar planes alimenticios.
-- Analizar hábitos alimenticios; detectar excesos de azúcar, sodio y grasas; detectar deficiencias
-  nutricionales.
-- Recomendar mejoras alimenticias y adaptarse conforme aprende de los hábitos del usuario.
+> **Implementation note:** the app ships Spanish-only by product decision, so the change-language
+> option was dropped rather than implemented. Notifications and data export are implemented (see
+> FR-21, FR-20); profile editing and API key management are also implemented. "Delete all data"
+> is not implemented as a standalone action.
 
-> **Requisito de seguridad (nuevo):** las llamadas a los modelos de visión por IA deben pasar por un
-> **backend/proxy delgado y sin estado** (stateless). La clave de la API de IA (OpenAI/Gemini Vision)
-> **nunca** debe incluirse en el binario de la aplicación móvil — es trivialmente extraíble. El
-> proxy únicamente reenvía la solicitud de foto → resultado, sin almacenar datos de usuario,
-> preservando el enfoque Local First para todo lo demás.
+## 3. AI Requirements
+
+- Identify food from photos.
+- Estimate portions.
+- Calculate calories and macronutrients; micronutrients when possible.
+- Recommend portions and generate meal plans.
+- Analyze eating habits; detect excess sugar, sodium, and fat; detect nutritional deficiencies.
+- Recommend dietary improvements and adapt as it learns the user's habits.
+
+> **Security requirement (new):** calls to AI vision models must go through a **thin, stateless
+> backend/proxy**. The AI API key (OpenAI/Gemini Vision) must **never** ship in the mobile app
+> binary — it's trivially extractable. The proxy only forwards the photo → result request,
+> without storing user data, preserving the Local-First approach for everything else.
 >
-> **Optimización recomendada:** cachear resultados de comidas repetidas (por hash o embedding de
-> imagen) antes de volver a invocar el modelo de visión, reduciendo costo y latencia.
+> **Recommended optimization:** cache results for repeated meals (by image hash or embedding)
+> before invoking the vision model again, reducing cost and latency.
 
-## 4. Requerimientos de Almacenamiento — Arquitectura Local First
+## 4. Storage Requirements — Local-First Architecture
 
-Toda la información del usuario (perfil, fotografías, resultados de análisis, historial, despensa,
-facturas, reportes, configuración, estadísticas, objetivos) se almacena localmente, cifrada, y la
-app funciona completamente sin conexión para consultar información ya almacenada.
+All user data (profile, photos, analysis results, history, pantry, receipts, reports, settings,
+statistics, goals) is stored locally, encrypted, and the app works fully offline for viewing
+already-stored data.
 
-Internet es necesario únicamente para: procesar nuevas fotografías mediante IA, actualizar bases
-nutricionales, respaldos opcionales y actualizaciones de la aplicación.
+Internet access is required only for: processing new photos via AI, updating nutrition databases,
+optional backups, and app updates.
 
-El usuario puede eliminar todos sus datos en cualquier momento.
+The user can delete all their data at any time.
 
-## 5. Requerimientos No Funcionales
+## 5. Non-Functional Requirements
 
-- Compatible con Android 12+ e iOS 16+.
-- Interfaz moderna, intuitiva y fácil de usar, completamente en español.
-- Análisis de fotografías en menos de cinco segundos (objetivo).
-- Arquitectura modular y escalable.
-- Cifrado de la información.
-- Accesibilidad WCAG 2.2 AA.
-- Consumo eficiente de batería y almacenamiento.
-- Experiencia fluida incluso con miles de registros.
+- Compatible with Android 12+ and iOS 16+.
+- Modern, intuitive, easy-to-use interface, entirely in Spanish.
+- Photo analysis in under five seconds (target).
+- Modular, scalable architecture.
+- Data encryption.
+- WCAG 2.2 AA accessibility.
+- Efficient battery and storage usage.
+- Smooth experience even with thousands of records.
 
-## 6. Estándares Nutricionales
+## 6. Nutrition Standards
 
-Basados en OMS, Dietary Reference Intakes (DRI), USDA MyPlate, American Heart Association, American
-Diabetes Association, Academy of Nutrition and Dietetics y guías alimentarias oficiales del país
-del usuario cuando estén disponibles.
+Based on WHO, Dietary Reference Intakes (DRI), USDA MyPlate, American Heart Association, American
+Diabetes Association, Academy of Nutrition and Dietetics, and the user's country's official dietary
+guidelines when available.
 
-Las recomendaciones son de carácter informativo/educativo y no sustituyen la atención de un médico
-o nutricionista.
+Recommendations are informational/educational only and don't replace care from a doctor or
+registered dietitian.
 
-## 7. Tecnologías
+## 7. Technologies
 
-- **Frontend:** Flutter (una sola base de código para Android e iOS).
-- **Gestión de estado:** Riverpod.
-- **Base de datos local:** Isar, cifrada.
-- **Autenticación:** local (correo/contraseña) en la fase inicial; Firebase Authentication o
-  Supabase Auth (Google, Microsoft) en fases posteriores.
-- **IA de reconocimiento de alimentos:** OpenAI Vision o Google Gemini Vision, detrás de un proxy
-  backend propio (ver Sección 3).
-- **OCR de facturas:** Google ML Kit o Tesseract OCR.
-- **Bases de datos nutricionales:** USDA FoodData Central, Open Food Facts y **Swiss Food
-  Composition Database** (fuente adicional para mejorar la cobertura de micronutrientes).
-- **Notificaciones:** Firebase Cloud Messaging y notificaciones locales.
-- **Gráficos:** FL Chart.
-- **Arquitectura:** Clean Architecture (data/domain/presentation).
-- **Distribución:** automatización de builds/releases con Fastlane para ambas tiendas.
+- **Frontend:** Flutter (single codebase for Android and iOS).
+- **State management:** Riverpod.
+- **Local database:** Isar, encrypted.
+- **Authentication:** local (email/password) in the initial phase; Firebase Authentication or
+  Supabase Auth (Google, Microsoft) in later phases.
+- **Food recognition AI:** OpenAI Vision or Google Gemini Vision, behind a proper backend proxy
+  (see Section 3).
+- **Receipt OCR:** Google ML Kit or Tesseract OCR.
+- **Nutrition databases:** USDA FoodData Central, Open Food Facts, and the **Swiss Food
+  Composition Database** (an additional source to improve micronutrient coverage).
+- **Notifications:** Firebase Cloud Messaging and local notifications.
+- **Charts:** FL Chart.
+- **Architecture:** Clean Architecture (data/domain/presentation).
+- **Distribution:** build/release automation with Fastlane for both stores.
 
-## 8. Características Diferenciadoras
+## 8. Differentiating Features
 
-Reconocimiento automático de alimentos por foto, estimación de porciones con IA, cálculo automático
-de calorías/nutrientes, gestión inteligente de despensa (factura o manual), planificación
-automática de comidas (incluyendo recetas recursivas y duplicación de días), recomendaciones
-basadas en evidencia científica, seguimiento mediante paneles/gráficos/reportes, enfoque Local
-First priorizando privacidad, compatibilidad Android/iOS con una sola base de código, y diseño
-preparado para crecer (relojes inteligentes, recetas, menús de restaurantes, asistentes
-conversacionales avanzados).
+Automatic food recognition from photos, AI-based portion estimation, automatic calorie/nutrient
+calculation, smart pantry management (receipt or manual), automatic meal planning (including
+recursive recipes and day duplication), evidence-based recommendations, tracking via
+dashboards/charts/reports, a Local-First approach that prioritizes privacy, Android/iOS
+compatibility from a single codebase, and a design built to grow (smartwatches, recipes,
+restaurant menus, advanced conversational assistants).
 
-## 9. Fases de Construcción
+## 9. Build Phases
 
-**Fase 1 — MVP (actual):** RF-01 (solo correo/contraseña local), RF-02, RF-03, RF-04/05/06/07/08
-(reconocimiento de fotos **real** con Gemini Vision, requiere que el usuario configure su propia
-clave de API gratuita en Configuración), RF-09 (escaneo de factura en PDF con extracción **real**
-para el formato CSU/Automercado), RF-11 (despensa manual o vía factura), RF-17 (panel principal).
-Corre en simulador iOS y emulador Android.
+**Phase 1 — MVP (current):** FR-01 (local email/password only), FR-02, FR-03, FR-04/05/06/07/08
+(**real** photo recognition with Gemini Vision, requires the user to set up their own free API key
+in Settings), FR-09 (PDF receipt scanning with **real** extraction for the CSU/Automercado format),
+FR-11 (pantry, manual or via receipt), FR-17 (main dashboard), FR-18/19 (weekly summary with
+charts and AI recommendations), FR-20 (PDF report export + full JSON data export), FR-21 (daily
+reminder notification), FR-12/13/14 partial (3-day AI meal planner inside the weekly PDF, scoped to
+pantry contents and recent habits). Runs on the iOS simulator and Android emulator.
 
-**Fases siguientes (documentadas, no implementadas aún):** RF-09 con otros formatos de factura u
-OCR de fotos, proxy backend opcional para ocultar la clave de Gemini en un despliegue multiusuario,
-RF-12 (planificador con IA), RF-13/14/15 (recomendaciones y asistente conversacional), RF-16
-(código de barras), RF-18/19/20 (reportes y exportación), RF-21 (notificaciones), inicio de sesión
-con Google/Microsoft.
+**Later phases (documented, not yet implemented):** FR-09 with other receipt formats or photo OCR,
+an optional backend proxy to hide the Gemini key in a multi-user deployment, FR-15 (conversational
+assistant), FR-16 (barcode scanning — explicitly out of scope by product decision), Excel/CSV
+export, per-event notifications beyond the daily reminder, Google/Microsoft login.
 
 ---
 
-*Este documento incorpora hallazgos de una investigación comparativa de aplicaciones open-source
-similares (OpenNutriTracker, Caloriemate, PANTS, FoodYou, Mega-Fitness-App) realizada antes de
-iniciar la construcción.*
+*This document incorporates findings from a comparative study of similar open-source apps
+(OpenNutriTracker, Caloriemate, PANTS, FoodYou, Mega-Fitness-App) conducted before development
+began.*
