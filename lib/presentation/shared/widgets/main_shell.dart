@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/security/notification_preferences_store.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/providers/auth_providers.dart';
 import '../../dashboard/screens/dashboard_screen.dart';
@@ -11,6 +12,7 @@ import '../../pantry/screens/pantry_screen.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../../profile/screens/profile_setup_screen.dart';
 import '../../reports/screens/weekly_report_screen.dart';
+import '../../settings/providers/notification_providers.dart';
 import 'settings_screen.dart';
 
 /// Root screen once logged in. Forces profile setup first (RF-02) before
@@ -25,6 +27,7 @@ class MainShell extends ConsumerStatefulWidget {
 class _MainShellState extends ConsumerState<MainShell> {
   int _tabIndex = 0;
   bool _askedAboutOnboarding = false;
+  bool _setUpDefaultReminders = false;
 
   Future<void> _offerOnboarding() async {
     final l10n = AppLocalizations.of(context)!;
@@ -79,6 +82,26 @@ class _MainShellState extends ConsumerState<MainShell> {
       data: (profile) {
         if (profile == null) {
           return const ProfileSetupScreen();
+        }
+
+        if (!_setUpDefaultReminders) {
+          _setUpDefaultReminders = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ref.read(notificationPreferencesProvider.notifier).ensureDefaultReminders({
+              MealReminderType.breakfast: (
+                title: l10n.settingsNotificationsBreakfastPushTitle,
+                body: l10n.settingsNotificationsPushBody,
+              ),
+              MealReminderType.lunch: (
+                title: l10n.settingsNotificationsLunchPushTitle,
+                body: l10n.settingsNotificationsPushBody,
+              ),
+              MealReminderType.dinner: (
+                title: l10n.settingsNotificationsDinnerPushTitle,
+                body: l10n.settingsNotificationsPushBody,
+              ),
+            });
+          });
         }
 
         final tabs = [

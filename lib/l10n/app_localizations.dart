@@ -1123,43 +1123,67 @@ abstract class AppLocalizations {
   /// No description provided for @settingsNotificationsDesc.
   ///
   /// In es, this message translates to:
-  /// **'Activa un recordatorio diario para registrar tus comidas.'**
+  /// **'Recordatorios para registrar desayuno, almuerzo y cena.'**
   String get settingsNotificationsDesc;
 
   /// No description provided for @settingsNotificationsEnabledDesc.
   ///
   /// In es, this message translates to:
-  /// **'Activado — te recordamos todos los días a las {time}'**
-  String settingsNotificationsEnabledDesc(String time);
+  /// **'{count, plural, =0{Todos los recordatorios desactivados} =1{1 recordatorio activo} other{{count} recordatorios activos}}'**
+  String settingsNotificationsEnabledDesc(int count);
 
   /// No description provided for @settingsNotificationsDialogTitle.
   ///
   /// In es, this message translates to:
-  /// **'Recordatorio diario'**
+  /// **'Recordatorios de comidas'**
   String get settingsNotificationsDialogTitle;
-
-  /// No description provided for @settingsNotificationsToggleLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'Recordarme registrar mis comidas'**
-  String get settingsNotificationsToggleLabel;
 
   /// No description provided for @settingsNotificationsTimeLabel.
   ///
   /// In es, this message translates to:
-  /// **'Hora del recordatorio'**
+  /// **'Hora'**
   String get settingsNotificationsTimeLabel;
 
-  /// No description provided for @settingsNotificationsPushTitle.
+  /// No description provided for @settingsNotificationsBreakfastLabel.
   ///
   /// In es, this message translates to:
-  /// **'¿Ya registraste tus comidas?'**
-  String get settingsNotificationsPushTitle;
+  /// **'Desayuno'**
+  String get settingsNotificationsBreakfastLabel;
+
+  /// No description provided for @settingsNotificationsLunchLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Almuerzo'**
+  String get settingsNotificationsLunchLabel;
+
+  /// No description provided for @settingsNotificationsDinnerLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Cena'**
+  String get settingsNotificationsDinnerLabel;
+
+  /// No description provided for @settingsNotificationsBreakfastPushTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Ya registraste tu desayuno?'**
+  String get settingsNotificationsBreakfastPushTitle;
+
+  /// No description provided for @settingsNotificationsLunchPushTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Ya registraste tu almuerzo?'**
+  String get settingsNotificationsLunchPushTitle;
+
+  /// No description provided for @settingsNotificationsDinnerPushTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Ya registraste tu cena?'**
+  String get settingsNotificationsDinnerPushTitle;
 
   /// No description provided for @settingsNotificationsPushBody.
   ///
   /// In es, this message translates to:
-  /// **'Abre NutriApp y registra lo que has comido hoy.'**
+  /// **'Recuerda registrar tus alimentos para potenciar los resultados de tu dieta.'**
   String get settingsNotificationsPushBody;
 
   /// No description provided for @settingsNotificationsPermissionDenied.
@@ -1519,7 +1543,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingPage3Description.
   ///
   /// In es, this message translates to:
-  /// **'Controla lo que tienes en casa: categorías, cantidades y fechas de vencimiento. Agrega productos a mano o escaneando la factura de tu supermercado.'**
+  /// **'Controla lo que tienes en casa: categorías y cantidades. Agrega productos a mano o escaneando la factura de tu supermercado.'**
   String get onboardingPage3Description;
 
   /// No description provided for @onboardingPage4Title.

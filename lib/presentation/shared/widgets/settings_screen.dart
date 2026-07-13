@@ -44,15 +44,13 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const Divider(height: 1),
             _SettingsTile(
-              icon: notifPrefs.enabled
+              icon: notifPrefs.all.any((r) => r.enabled)
                   ? Icons.notifications_active
                   : Icons.notifications_outlined,
-              iconColor: notifPrefs.enabled ? theme.colorScheme.primary : null,
+              iconColor: notifPrefs.all.any((r) => r.enabled) ? theme.colorScheme.primary : null,
               title: l10n.settingsNotifications,
-              description: notifPrefs.enabled
-                  ? l10n.settingsNotificationsEnabledDesc(
-                      TimeOfDay(hour: notifPrefs.hour, minute: notifPrefs.minute).format(context))
-                  : l10n.settingsNotificationsDesc,
+              description: l10n.settingsNotificationsEnabledDesc(
+                  notifPrefs.all.where((r) => r.enabled).length),
               onTap: () => _showNotificationsDialog(context, ref, l10n, notifPrefs),
             ),
             const Divider(height: 1),
@@ -211,10 +209,21 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
+  String _mealLabel(AppLocalizations l10n, MealReminderType type) => switch (type) {
+        MealReminderType.breakfast => l10n.settingsNotificationsBreakfastLabel,
+        MealReminderType.lunch => l10n.settingsNotificationsLunchLabel,
+        MealReminderType.dinner => l10n.settingsNotificationsDinnerLabel,
+      };
+
+  String _mealPushTitle(AppLocalizations l10n, MealReminderType type) => switch (type) {
+        MealReminderType.breakfast => l10n.settingsNotificationsBreakfastPushTitle,
+        MealReminderType.lunch => l10n.settingsNotificationsLunchPushTitle,
+        MealReminderType.dinner => l10n.settingsNotificationsDinnerPushTitle,
+      };
+
   Future<void> _showNotificationsDialog(BuildContext context, WidgetRef ref,
       AppLocalizations l10n, NotificationPreferences current) async {
-    var enabled = current.enabled;
-    var time = TimeOfDay(hour: current.hour, minute: current.minute);
+    var reminders = {for (final r in current.all) r.type: r};
 
     await showDialog<void>(
       context: context,
@@ -225,23 +234,39 @@ class SettingsScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(l10n.settingsNotificationsToggleLabel),
-                value: enabled,
-                onChanged: (v) => setDialogState(() => enabled = v),
-              ),
-              if (enabled)
-                ListTile(
+              for (final type in MealReminderType.values) ...[
+                SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text(l10n.settingsNotificationsTimeLabel),
-                  trailing: Text(time.format(ctx),
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  onTap: () async {
-                    final picked = await showTimePicker(context: ctx, initialTime: time);
-                    if (picked != null) setDialogState(() => time = picked);
-                  },
+                  title: Text(_mealLabel(l10n, type)),
+                  subtitle: reminders[type]!.enabled
+                      ? Text(TimeOfDay(hour: reminders[type]!.hour, minute: reminders[type]!.minute)
+                          .format(ctx))
+                      : null,
+                  value: reminders[type]!.enabled,
+                  onChanged: (v) => setDialogState(
+                      () => reminders[type] = reminders[type]!.copyWith(enabled: v)),
                 ),
+                if (reminders[type]!.enabled)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(l10n.settingsNotificationsTimeLabel),
+                    trailing: Text(
+                        TimeOfDay(hour: reminders[type]!.hour, minute: reminders[type]!.minute)
+                            .format(ctx),
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    onTap: () async {
+                      final picked = await showTimePicker(
+                        context: ctx,
+                        initialTime:
+                            TimeOfDay(hour: reminders[type]!.hour, minute: reminders[type]!.minute),
+                      );
+                      if (picked != null) {
+                        setDialogState(() => reminders[type] = reminders[type]!
+                            .copyWith(hour: picked.hour, minute: picked.minute));
+                      }
+                    },
+                  ),
+              ],
             ],
           ),
           actions: [
@@ -252,13 +277,19 @@ class SettingsScreen extends ConsumerWidget {
             FilledButton(
               onPressed: () async {
                 Navigator.of(ctx).pop();
-                final granted = await ref.read(notificationPreferencesProvider.notifier).save(
-                      enabled: enabled,
-                      time: time,
-                      title: l10n.settingsNotificationsPushTitle,
-                      body: l10n.settingsNotificationsPushBody,
-                    );
-                if (!granted && enabled && context.mounted) {
+                var anyDenied = false;
+                for (final type in MealReminderType.values) {
+                  final r = reminders[type]!;
+                  final granted = await ref.read(notificationPreferencesProvider.notifier).save(
+                        type: type,
+                        enabled: r.enabled,
+                        time: TimeOfDay(hour: r.hour, minute: r.minute),
+                        title: _mealPushTitle(l10n, type),
+                        body: l10n.settingsNotificationsPushBody,
+                      );
+                  if (!granted && r.enabled) anyDenied = true;
+                }
+                if (anyDenied && context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(l10n.settingsNotificationsPermissionDenied)));
                 }

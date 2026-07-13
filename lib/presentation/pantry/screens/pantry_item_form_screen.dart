@@ -108,14 +108,6 @@ class _PantryItemFormScreenState extends ConsumerState<PantryItemFormScreen> {
                   trailing: const Icon(Icons.calendar_today),
                   onTap: () => _pickDate(isPurchase: true),
                 ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(l10n.pantryExpirationDate),
-                  subtitle: Text(
-                      _expirationDate == null ? '-' : _formatDate(_expirationDate!)),
-                  trailing: const Icon(Icons.calendar_today),
-                  onTap: () => _pickDate(isPurchase: false),
-                ),
                 const SizedBox(height: 24),
                 FilledButton(
                   onPressed: _save,
@@ -136,18 +128,12 @@ class _PantryItemFormScreenState extends ConsumerState<PantryItemFormScreen> {
     final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
-      initialDate: isPurchase ? _purchaseDate : (_expirationDate ?? now),
+      initialDate: _purchaseDate,
       firstDate: DateTime(now.year - 2),
       lastDate: DateTime(now.year + 3),
     );
     if (picked == null) return;
-    setState(() {
-      if (isPurchase) {
-        _purchaseDate = picked;
-      } else {
-        _expirationDate = picked;
-      }
-    });
+    setState(() => _purchaseDate = picked);
   }
 
   Future<void> _save() async {

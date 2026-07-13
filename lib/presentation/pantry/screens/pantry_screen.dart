@@ -108,8 +108,21 @@ class _PantryScreenState extends ConsumerState<PantryScreen> {
 
   Future<void> _pickAndAnalyzeInvoice() async {
     final l10n = AppLocalizations.of(context)!;
-    const pdfType = XTypeGroup(label: 'PDF', extensions: ['pdf']);
-    final file = await openFile(acceptedTypeGroups: const [pdfType]);
+    const pdfType = XTypeGroup(
+      label: 'PDF',
+      extensions: ['pdf'],
+      uniformTypeIdentifiers: ['com.adobe.pdf'],
+    );
+    final XFile? file;
+    try {
+      file = await openFile(acceptedTypeGroups: const [pdfType]);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.invoiceParsingError)));
+      }
+      return;
+    }
     final path = file?.path;
     if (path == null) {
       if (mounted) {

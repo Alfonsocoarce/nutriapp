@@ -4,16 +4,22 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
-/// Thin wrapper around flutter_local_notifications for the single daily
-/// "log your meals" reminder configurable in Configuración → Notificaciones.
-/// Purely local/on-device, scheduled by the OS — no push server, consistent
-/// with the app's Local First architecture.
+import '../security/notification_preferences_store.dart';
+
+/// Thin wrapper around flutter_local_notifications for the three daily
+/// meal reminders (desayuno/almuerzo/cena) configurable in Configuración →
+/// Notificaciones. Purely local/on-device, scheduled by the OS — no push
+/// server, consistent with the app's Local First architecture.
 class NotificationService {
   NotificationService._();
 
   static final NotificationService instance = NotificationService._();
 
-  static const _reminderId = 1001;
+  static const _idByType = {
+    MealReminderType.breakfast: 1001,
+    MealReminderType.lunch: 1002,
+    MealReminderType.dinner: 1003,
+  };
 
   final _plugin = FlutterLocalNotificationsPlugin();
   bool _initialized = false;
@@ -52,14 +58,15 @@ class NotificationService {
     return (iosGranted ?? true) && (androidGranted ?? true);
   }
 
-  Future<void> scheduleDailyReminder(
+  Future<void> scheduleMealReminder(
+    MealReminderType type,
     TimeOfDay time, {
     required String title,
     required String body,
   }) async {
     await _ensureInitialized();
     await _plugin.zonedSchedule(
-      _reminderId,
+      _idByType[type]!,
       title,
       body,
       _nextInstanceOf(time),
@@ -76,9 +83,9 @@ class NotificationService {
     );
   }
 
-  Future<void> cancelReminder() async {
+  Future<void> cancelMealReminder(MealReminderType type) async {
     await _ensureInitialized();
-    await _plugin.cancel(_reminderId);
+    await _plugin.cancel(_idByType[type]!);
   }
 
   tz.TZDateTime _nextInstanceOf(TimeOfDay time) {

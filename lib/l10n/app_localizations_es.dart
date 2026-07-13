@@ -548,29 +548,49 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsNotificationsDesc =>
-      'Activa un recordatorio diario para registrar tus comidas.';
+      'Recordatorios para registrar desayuno, almuerzo y cena.';
 
   @override
-  String settingsNotificationsEnabledDesc(String time) {
-    return 'Activado — te recordamos todos los días a las $time';
+  String settingsNotificationsEnabledDesc(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recordatorios activos',
+      one: '1 recordatorio activo',
+      zero: 'Todos los recordatorios desactivados',
+    );
+    return '$_temp0';
   }
 
   @override
-  String get settingsNotificationsDialogTitle => 'Recordatorio diario';
+  String get settingsNotificationsDialogTitle => 'Recordatorios de comidas';
 
   @override
-  String get settingsNotificationsToggleLabel =>
-      'Recordarme registrar mis comidas';
+  String get settingsNotificationsTimeLabel => 'Hora';
 
   @override
-  String get settingsNotificationsTimeLabel => 'Hora del recordatorio';
+  String get settingsNotificationsBreakfastLabel => 'Desayuno';
 
   @override
-  String get settingsNotificationsPushTitle => '¿Ya registraste tus comidas?';
+  String get settingsNotificationsLunchLabel => 'Almuerzo';
+
+  @override
+  String get settingsNotificationsDinnerLabel => 'Cena';
+
+  @override
+  String get settingsNotificationsBreakfastPushTitle =>
+      '¿Ya registraste tu desayuno?';
+
+  @override
+  String get settingsNotificationsLunchPushTitle =>
+      '¿Ya registraste tu almuerzo?';
+
+  @override
+  String get settingsNotificationsDinnerPushTitle => '¿Ya registraste tu cena?';
 
   @override
   String get settingsNotificationsPushBody =>
-      'Abre NutriApp y registra lo que has comido hoy.';
+      'Recuerda registrar tus alimentos para potenciar los resultados de tu dieta.';
 
   @override
   String get settingsNotificationsPermissionDenied =>
@@ -766,7 +786,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get onboardingPage3Description =>
-      'Controla lo que tienes en casa: categorías, cantidades y fechas de vencimiento. Agrega productos a mano o escaneando la factura de tu supermercado.';
+      'Controla lo que tienes en casa: categorías y cantidades. Agrega productos a mano o escaneando la factura de tu supermercado.';
 
   @override
   String get onboardingPage4Title => 'Resumen semanal';
