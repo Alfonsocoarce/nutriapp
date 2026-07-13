@@ -60,7 +60,8 @@ class _PantryScreenState extends ConsumerState<PantryScreen> {
                     children: grouped.entries.map((entry) {
                       return ExpansionTile(
                         title: Text(entry.key),
-                        initiallyExpanded: true,
+                        subtitle: Text(l10n.pantryItemCount(entry.value.length)),
+                        initiallyExpanded: false,
                         children: entry.value
                             .map((item) => _PantryTile(item: item))
                             .toList(),

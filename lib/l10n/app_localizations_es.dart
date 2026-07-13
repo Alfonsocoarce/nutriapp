@@ -470,6 +470,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pantryEmpty => 'Tu despensa está vacía';
 
   @override
+  String pantryItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count productos',
+      one: '1 producto',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get pantrySaveItem => 'Guardar producto';
 
   @override

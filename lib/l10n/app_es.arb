@@ -160,6 +160,12 @@
   "pantryExpiringSoon": "Próximo a vencer",
   "pantryExpired": "Vencido",
   "pantryEmpty": "Tu despensa está vacía",
+  "pantryItemCount": "{count, plural, =1{1 producto} other{{count} productos}}",
+  "@pantryItemCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "pantrySaveItem": "Guardar producto",
   "pantryUploadInvoice": "Cargar factura del súper",
   "pantryAddManually": "Agregar manualmente",

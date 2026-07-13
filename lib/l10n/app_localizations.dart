@@ -994,6 +994,12 @@ abstract class AppLocalizations {
   /// **'Tu despensa está vacía'**
   String get pantryEmpty;
 
+  /// No description provided for @pantryItemCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 producto} other{{count} productos}}'**
+  String pantryItemCount(int count);
+
   /// No description provided for @pantrySaveItem.
   ///
   /// In es, this message translates to:
