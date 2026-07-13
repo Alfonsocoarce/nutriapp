@@ -43,12 +43,6 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const Divider(height: 1),
             _SettingsTile(
-              icon: Icons.language,
-              title: l10n.settingsLanguage,
-              description: l10n.settingsLanguageDesc,
-            ),
-            const Divider(height: 1),
-            _SettingsTile(
               icon: notifPrefs.enabled
                   ? Icons.notifications_active
                   : Icons.notifications_outlined,

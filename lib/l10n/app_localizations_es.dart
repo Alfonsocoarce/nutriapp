@@ -312,6 +312,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'Revisa las porciones antes de guardar';
 
   @override
+  String get foodLogImprovementTipTitle =>
+      'Cómo obtener un resultado más preciso';
+
+  @override
   String get foodLogComponentBreakdownTitle => 'Desglose por alimento';
 
   @override
@@ -512,13 +516,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsChangeGoal => 'Cambiar objetivo';
-
-  @override
-  String get settingsLanguage => 'Idioma';
-
-  @override
-  String get settingsLanguageDesc =>
-      'Selecciona el idioma en el que se muestra la aplicación.';
 
   @override
   String get settingsNotifications => 'Notificaciones';

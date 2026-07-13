@@ -77,7 +77,10 @@ void main() {
       expect(MealType.fromHour(7), MealType.breakfast);
       expect(MealType.fromHour(13), MealType.lunch);
       expect(MealType.fromHour(19), MealType.dinner);
-      expect(MealType.fromHour(2), MealType.drink);
+      // Late night / very early hours fall back to dinner, not drink — a
+      // solid meal logged at 2am shouldn't be mislabeled as a beverage.
+      expect(MealType.fromHour(2), MealType.dinner);
+      expect(MealType.fromHour(23), MealType.dinner);
     });
   });
 }

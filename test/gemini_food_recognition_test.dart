@@ -131,6 +131,36 @@ void main() {
 
       expect(result.components, isEmpty);
     });
+
+    test('carries an improvementTip when confidence is low', () {
+      final result = foodRecognitionResultFromGeminiJson({
+        'foodName': 'Gallo pinto con huevo',
+        'ingredients': ['Gallo pinto', 'Huevo'],
+        'confidence': 'low',
+        'improvementTip':
+            'Acércate más y evita que otros alimentos tapen el plato.',
+      });
+
+      expect(result.improvementTip, isNotNull);
+      expect(result.improvementTip, contains('Acércate'));
+    });
+
+    test('treats a missing or empty improvementTip as null', () {
+      final withoutField = foodRecognitionResultFromGeminiJson({
+        'foodName': 'Comida',
+        'ingredients': <String>[],
+        'confidence': 'high',
+      });
+      final withEmptyString = foodRecognitionResultFromGeminiJson({
+        'foodName': 'Comida',
+        'ingredients': <String>[],
+        'confidence': 'high',
+        'improvementTip': '',
+      });
+
+      expect(withoutField.improvementTip, isNull);
+      expect(withEmptyString.improvementTip, isNull);
+    });
   });
 
   group('mimeTypeForImagePath', () {

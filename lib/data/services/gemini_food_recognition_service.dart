@@ -36,6 +36,9 @@ FoodRecognitionResult foodRecognitionResultFromGeminiJson(
             true
         ? null
         : json['visibilityWarning'] as String?,
+    improvementTip: (json['improvementTip'] as String?)?.trim().isEmpty == true
+        ? null
+        : json['improvementTip'] as String?,
     components: (json['components'] as List?)
             ?.cast<Map<String, dynamic>>()
             .map(FoodComponentBreakdown.fromJson)
@@ -84,6 +87,7 @@ Future<dynamic> _callGeminiJson({
   required String prompt,
   required Map<String, dynamic> responseSchema,
   String? photoPath,
+  int thinkingBudget = 0,
 }) async {
   final apiKey = await ApiKeyStore.instance.getGeminiApiKey();
   if (apiKey == null || apiKey.isEmpty) {
@@ -117,14 +121,19 @@ Future<dynamic> _callGeminiJson({
           'generationConfig': {
             'responseMimeType': 'application/json',
             'responseSchema': responseSchema,
-            // Disable extended "thinking" — these are straightforward
-            // classification/generation tasks, not ones that benefit from
-            // deep reasoning, and thinking adds significant latency.
-            'thinkingConfig': {'thinkingBudget': 0},
+            // Most calls here are straightforward classification/generation
+            // tasks that don't benefit from deep reasoning, so thinking is
+            // off (budget 0) by default to keep latency low. Meal-photo
+            // recognition is the exception — accurately identifying every
+            // component, weighing it against visual references, and cross-
+            // checking known nutrition data is exactly the kind of
+            // multi-step estimation "thinking" mode helps with, so it opts
+            // into dynamic thinking (budget -1) at the cost of some speed.
+            'thinkingConfig': {'thinkingBudget': thinkingBudget},
           },
         }),
       )
-      .timeout(const Duration(seconds: 60));
+      .timeout(const Duration(seconds: 90));
 
   if (response.statusCode != 200) {
     throw HttpException(
@@ -143,11 +152,13 @@ Future<Map<String, dynamic>> callGeminiVisionJson({
   required String photoPath,
   required String prompt,
   required Map<String, dynamic> responseSchema,
+  int thinkingBudget = 0,
 }) async {
   final json = await _callGeminiJson(
     prompt: prompt,
     responseSchema: responseSchema,
     photoPath: photoPath,
+    thinkingBudget: thinkingBudget,
   );
   return json as Map<String, dynamic>;
 }
@@ -167,52 +178,90 @@ Future<dynamic> callGeminiTextJson({
 /// [ApiKeyStore] for the security tradeoff this implies.
 class GeminiFoodRecognitionService implements FoodRecognitionService {
   static const _prompt = '''
-Eres un experto en nutrición y en estimación de porciones a partir de
-fotografías. Analiza la fotografía de este plato de comida y responde
-ÚNICAMENTE con un objeto JSON (sin texto adicional) que describa el
-alimento, sus porciones y su información nutricional aproximada para la
-porción visible en la foto.
+Actúa como una persona nutricionista clínica certificada con formación en
+ciencia de los alimentos y años de experiencia estimando porciones a
+partir de fotografías (el mismo método que usan en consulta: el "método
+del plato" y comparación con objetos de referencia). Analiza la
+fotografía de este plato de comida con el mayor rigor posible y responde
+ÚNICAMENTE con un objeto JSON (sin texto adicional).
 
-Estimación de porciones:
-- Identifica cada componente visible del plato por separado (proteína,
-  carbohidrato, vegetales, salsas, etc.) antes de estimar el peso total, y
-  usa referencias de escala en la foto (tamaño del plato, cubiertos, taza)
-  para calibrar el tamaño de cada porción con la mayor precisión posible.
-- Presta atención a alimentos que suelen quedar parcial o totalmente
-  cubiertos por otros en el mismo plato (por ejemplo: arroz y frijoles o
-  "gallo pinto" debajo de huevos fritos, salsas debajo de una proteína,
-  guarniciones debajo de una pieza principal). Si ves bordes, texturas o
-  colores que sugieren que hay comida debajo o detrás de otro alimento,
-  inclúyela con tu mejor estimación, aunque no sea completamente visible.
-- Si sospechas que una parte relevante del plato podría no ser visible en
-  la foto (por ejemplo, algo parece estar debajo de otro alimento, o el
-  plato está cortado por el borde de la imagen), describe brevemente en
-  "visibilityWarning" qué podría faltar por ver, en español, para que la
-  persona pueda confirmarlo o tomar otra foto. Si el plato completo es
-  claramente visible, usa null en ese campo.
+Sigue este proceso, en orden, antes de responder:
+
+1. IDENTIFICACIÓN: Mira la foto completa primero. Enumera mentalmente cada
+   alimento distinguible (proteína, carbohidrato, vegetales, salsas,
+   bebidas, postres, etc.), incluyendo los que sueles ver parcialmente
+   cubiertos por otros (ej. arroz y frijoles o "gallo pinto" debajo de
+   huevos fritos, salsas debajo de una proteína, guarniciones debajo de
+   una pieza principal). Si ves bordes, texturas o colores que sugieren
+   comida debajo o detrás de otro alimento, inclúyela con tu mejor
+   estimación aunque no sea 100% visible.
+2. ESCALA Y REFERENCIA: Usa objetos de referencia visibles en la foto para
+   calibrar tamaños — un plato llano estándar mide 24-27 cm de diámetro,
+   uno de postre/ensalada 18-20 cm, un tenedor ~19 cm, una cuchara sopera
+   ~15 cm, una taza estándar 240 ml, un huevo mediano ~50 g. Para
+   alimentos discretos, cuenta unidades (ej. "2 huevos", "3 tortillas")
+   en vez de solo estimar un peso agregado.
+3. PESO Y PORCIÓN: Con la escala calibrada, estima el peso en gramos (o
+   volumen en ml para líquidos) de cada componente por separado.
+4. NUTRICIÓN: Para cada componente, calcula la información nutricional
+   usando tu conocimiento de tablas de composición de alimentos
+   reconocidas (USDA FoodData Central, tablas de composición de alimentos
+   de Centroamérica del INCAP) aplicada al peso estimado — no repitas de
+   memoria valores por 100 g sin ajustarlos a la porción real.
+5. AUTOEVALUACIÓN: Solo al final, decide "confidence" según qué tan clara
+   estuvo la foto y qué tan seguro quedaste de la escala y del contenido
+   oculto.
+
+Reglas de identificación:
+- "foodName" debe ser el nombre real y específico del plato o alimento
+  (ej. "Gallo pinto con huevo frito y plátano maduro", "Casado con
+  pollo", "Ensalada César con pollo"). NUNCA generes un nombre genérico
+  tipo "Desayuno con X, Y y Z" o "Almuerzo con..." — si no reconoces un
+  nombre de plato típico, describe el componente principal de forma
+  concreta (ej. "Huevos fritos con acompañamientos", no "Desayuno").
+- Si sospechas que una parte relevante del plato podría no ser visible
+  (algo parece estar debajo de otro alimento, o el plato está cortado por
+  el borde de la imagen), describe brevemente en "visibilityWarning" qué
+  podría faltar por ver, en español. Si el plato completo es claramente
+  visible, usa null en ese campo.
 
 Desglose por componente (obligatorio):
-- Además de los totales del plato, llena "components": un arreglo con un
-  objeto POR CADA alimento distinguible del plato (ej. "Huevo frito",
-  "Arroz", "Frijoles", "Plátano maduro", "Aguacate", "Pan"), cada uno con su
-  propio peso estimado en gramos y su propia información nutricional.
-- La suma de "calories"/"proteinGrams"/"carbsGrams"/"fatGrams" de todos los
-  elementos de "components" debe ser consistente con los totales generales
-  del plato (calories, proteinGrams, carbsGrams, fatGrams a nivel raíz).
-- No agrupes varios alimentos distintos en un solo componente (por ejemplo,
-  "huevos y arroz" no es válido; deben ir como dos componentes separados).
+- Además de los totales del plato, llena "components": un objeto POR CADA
+  alimento distinguible (ej. "Huevo frito", "Arroz", "Frijoles", "Plátano
+  maduro", "Aguacate", "Pan"), cada uno con su propio peso estimado en
+  gramos y su propia información nutricional. Incluye la cantidad en el
+  nombre cuando aplique (ej. "2 huevos fritos").
+- La suma de "calories"/"proteinGrams"/"carbsGrams"/"fatGrams" de todos
+  los "components" debe ser consistente con los totales a nivel raíz.
+- No agrupes varios alimentos distintos en un solo componente (ej.
+  "huevos y arroz" no es válido; van como dos componentes separados).
 
-Reglas importantes:
-- Si no puedes determinar un valor con confianza razonable, usa null en ese
-  campo en lugar de adivinar. Es preferible un dato faltante a uno incorrecto.
-- "confidence" refleja tu nivel general de certeza sobre la identificación Y
-  la estimación de porciones: usa "low" o "medium" (no "high") cuando haya
-  alimentos parcial u ocultos, o cuando la escala del plato sea difícil de
-  determinar.
-- Los valores nutricionales son para el peso/porción estimado visible en la
-  foto completa (sumando todos los componentes del plato), no por cada 100 g.
+Reglas sobre precisión y campos vacíos (importante — leer con cuidado):
+- Como experta/o, tu trabajo es DAR UNA ESTIMACIÓN RAZONADA siempre que el
+  alimento sea identificable, igual que harías en una consulta real con
+  información visual limitada — no dejar el campo en blanco por
+  precaución. Usa null en los campos numéricos ÚNICAMENTE cuando el
+  alimento en sí no se pueda identificar de ninguna forma razonable (por
+  ejemplo, el objeto no es reconocible como comida, o la imagen está
+  completamente fuera de foco, o no hay comida visible). Una estimación
+  razonada con "confidence": "low" ayuda mucho más a la persona que un
+  campo vacío sin ninguna cifra.
+- "confidence" refleja tu certeza general sobre identificación Y
+  porciones: usa "low" o "medium" (no "high") cuando haya alimentos
+  parcial u ocultos, ángulos difíciles, poca luz, o escala ambigua — pero
+  igual entrega tu mejor número.
+- Si "confidence" es "medium" o "low", llena "improvementTip" con 1-2
+  oraciones concretas y accionables en español sobre qué debería hacer la
+  persona al tomar la próxima foto para lograr un resultado más preciso
+  (ej. "Acércate más y evita que otros alimentos tapen el plato",
+  "Fotografía desde arriba con buena luz, mostrando el plato completo sin
+  cortar los bordes", "Aleja un poco la cámara para que se vea el plato
+  completo junto a un objeto de referencia como un tenedor"). Si
+  "confidence" es "high", usa null en "improvementTip".
+- Los valores nutricionales son para el peso/porción total estimado
+  visible en la foto (sumando todos los componentes), no por cada 100 g.
 - Responde en español para foodName, ingredients, cookingMethod,
-  visibilityWarning y el "name" de cada componente.
+  visibilityWarning, improvementTip y el "name" de cada componente.
 ''';
 
   @override
@@ -221,6 +270,11 @@ Reglas importantes:
       photoPath: photoPath,
       prompt: _prompt,
       responseSchema: _responseSchema,
+      // Dynamic thinking: accurately identifying every component, scaling
+      // it against visual references, and cross-checking known nutrition
+      // data benefits from multi-step reasoning far more than the other
+      // (simpler) Gemini calls in this app do — worth the extra latency.
+      thinkingBudget: -1,
     );
     return foodRecognitionResultFromGeminiJson(json);
   }
@@ -237,6 +291,7 @@ Reglas importantes:
       'estimatedWeightGrams': {'type': 'NUMBER', 'nullable': true},
       'servings': {'type': 'INTEGER', 'nullable': true},
       'visibilityWarning': {'type': 'STRING', 'nullable': true},
+      'improvementTip': {'type': 'STRING', 'nullable': true},
       'components': {
         'type': 'ARRAY',
         'items': {

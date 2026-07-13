@@ -688,6 +688,12 @@ abstract class AppLocalizations {
   /// **'Revisa las porciones antes de guardar'**
   String get foodLogVisibilityWarningTitle;
 
+  /// No description provided for @foodLogImprovementTipTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cómo obtener un resultado más preciso'**
+  String get foodLogImprovementTipTitle;
+
   /// No description provided for @foodLogComponentBreakdownTitle.
   ///
   /// In es, this message translates to:
@@ -1071,18 +1077,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Cambiar objetivo'**
   String get settingsChangeGoal;
-
-  /// No description provided for @settingsLanguage.
-  ///
-  /// In es, this message translates to:
-  /// **'Idioma'**
-  String get settingsLanguage;
-
-  /// No description provided for @settingsLanguageDesc.
-  ///
-  /// In es, this message translates to:
-  /// **'Selecciona el idioma en el que se muestra la aplicación.'**
-  String get settingsLanguageDesc;
 
   /// No description provided for @settingsNotifications.
   ///
