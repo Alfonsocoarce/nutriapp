@@ -4,6 +4,7 @@ import '../../domain/entities/nutrition_goal.dart';
 import '../../domain/entities/pantry_item.dart';
 import '../../domain/entities/sex.dart';
 import '../../domain/entities/weekly_summary.dart';
+import '../content/nutritionist_exchange_plan.dart';
 import 'gemini_food_recognition_service.dart';
 
 String _goalLabel(NutritionGoal g) => switch (g) {
@@ -165,6 +166,12 @@ Perfil del usuario:
 - Restricciones alimentarias: $restrictionsText
 - Alergias: $allergiesText
 - Meta calórica diaria calculada (Mifflin-St Jeor × actividad): ${profile.dailyCalorieGoal.round()} kcal
+
+Plan de intercambios de alimentos de su nutricionista (usa estas porciones
+exactas al calcular cada comida — cuando un alimento no está en esta
+lista, aplica tu mejor criterio clínico pero mantén la coherencia con
+estos tamaños de porción):
+${nutritionistExchangePlanPromptText()}
 
 Despensa actual (producto, cantidad, y aviso si vence pronto o ya venció):
 $pantryText

@@ -2,6 +2,7 @@ import '../../domain/entities/food_frequency.dart';
 import '../../domain/entities/nutrition_goal.dart';
 import '../../domain/entities/weekly_summary.dart';
 import '../../domain/usecases/build_weekly_recommendations.dart';
+import '../content/nutritionist_exchange_plan.dart';
 import 'gemini_food_recognition_service.dart';
 
 String _goalLabel(NutritionGoal g) => switch (g) {
@@ -91,6 +92,10 @@ registros):
 - Sodio promedio: ${summary.avgSodiumMilligrams.round()} mg/día
 - Fibra promedio: ${summary.avgFiberGrams.round()} g/día
 - Alimentos más consumidos esta semana: $topFoodsText
+
+Plan de intercambios de alimentos de su nutricionista (las porciones que
+sugieras deben ser coherentes con estas equivalencias):
+${nutritionistExchangePlanPromptText()}
 
 Instrucciones para cada recomendación:
 - Debe ser específica y accionable, no genérica: menciona porciones en
