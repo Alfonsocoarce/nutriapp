@@ -12,59 +12,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get appTitle => 'NutriApp';
 
   @override
-  String get authWelcomeTitle => 'Bienvenido a NutriApp';
-
-  @override
-  String get authWelcomeSubtitle => 'Tu nutrición, con inteligencia artificial';
-
-  @override
-  String get authEmailLabel => 'Correo electrónico';
-
-  @override
-  String get authPasswordLabel => 'Contraseña';
-
-  @override
-  String get authConfirmPasswordLabel => 'Confirmar contraseña';
-
-  @override
-  String get authLoginButton => 'Iniciar sesión';
-
-  @override
-  String get authRegisterButton => 'Registrarse';
-
-  @override
-  String get authRegisterLink => '¿No tienes cuenta? Regístrate';
-
-  @override
-  String get authLoginLink => '¿Ya tienes cuenta? Inicia sesión';
-
-  @override
-  String get authLogoutButton => 'Cerrar sesión';
-
-  @override
-  String get authInvalidEmail => 'Correo electrónico no válido';
-
-  @override
-  String get authPasswordTooShort =>
-      'La contraseña debe tener al menos 8 caracteres';
-
-  @override
-  String get authPasswordsDontMatch => 'Las contraseñas no coinciden';
-
-  @override
-  String get authEmailAlreadyExists => 'Ya existe una cuenta con este correo';
-
-  @override
-  String get authInvalidCredentials => 'Correo o contraseña incorrectos';
-
-  @override
-  String get authGoogleComingSoon => 'Inicio de sesión con Google próximamente';
-
-  @override
-  String get authMicrosoftComingSoon =>
-      'Inicio de sesión con Microsoft próximamente';
-
-  @override
   String get profileTitle => 'Perfil';
 
   @override

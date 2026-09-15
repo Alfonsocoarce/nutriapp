@@ -89,19 +89,6 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => _confirmDeleteAll(context, ref, l10n),
             ),
             const Divider(height: 1),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.tonalIcon(
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: const StadiumBorder(),
-                ),
-                onPressed: () => ref.read(authControllerProvider.notifier).logout(),
-                icon: const Icon(Icons.logout),
-                label: Text(l10n.authLogoutButton),
-              ),
-            ),
             const SizedBox(height: 16),
           ],
         ),
@@ -205,7 +192,7 @@ class SettingsScreen extends ConsumerWidget {
     );
     if (confirmed == true) {
       await AppDatabase.instance.deleteAllData();
-      await ref.read(authControllerProvider.notifier).logout();
+      await ref.read(authControllerProvider.notifier).resetAfterDataDeleted();
     }
   }
 
