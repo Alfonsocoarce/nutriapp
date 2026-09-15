@@ -1,12 +1,14 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/enum_labels.dart';
 import '../../../core/theme/chart_colors.dart';
 import '../../../domain/entities/nutrition_goal.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../profile/providers/profile_providers.dart';
+import '../../shared/widgets/affirmation_card.dart';
 import '../providers/dashboard_providers.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -38,6 +40,10 @@ class DashboardScreen extends ConsumerWidget {
                 return ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    const AffirmationCard(),
+                    const SizedBox(height: 16),
+                    _MyPlanEntryCard(onTap: () => context.push('/mi-plan')),
+                    const SizedBox(height: 24),
                     _CalorieRing(
                       consumed: progress.caloriesConsumed,
                       goal: progress.caloriesGoal,
@@ -103,6 +109,44 @@ class DashboardScreen extends ConsumerWidget {
               },
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _MyPlanEntryCard extends StatelessWidget {
+  const _MyPlanEntryCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      elevation: 0,
+      color: theme.colorScheme.primaryContainer,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              const Text('🍽️', style: TextStyle(fontSize: 32)),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  'Mi plan de alimentación',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ),
+              Icon(Icons.chevron_right, color: theme.colorScheme.onPrimaryContainer),
+            ],
+          ),
         ),
       ),
     );
